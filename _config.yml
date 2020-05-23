@@ -1,0 +1,37 @@
+title: Falcon-Blog
+description: "Personal blog for describing various stuff"
+author:
+  name: "Falcon1024"
+  url: "0xf4lc0n.github.io"
+
+baseurl: /
+
+source: .
+destination: ./_site
+permalink: /:title
+paginate: 3
+paginate_path: /page/:num/
+
+collections_dir: my_collections
+
+collections:
+  emotet_re_project:
+    output: true
+    permalink: /re-emotet/:name
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+
+future: true
+plugins:
+  - jekyll-seo-tag
+  - jekyll-paginate
+  - jekyll-sitemap
+
+# Custom variables
+owner: "Falcon"
+year: "2020"
