@@ -18,7 +18,9 @@ collections:
   emotet_re_project:
     output: true
     permalink: /re-emotet/:name
-
+  crackme:
+    output: true
+    permalink: /crackme/:name
 defaults:
   - scope:
       path: ""
