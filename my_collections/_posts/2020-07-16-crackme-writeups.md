@@ -9,3 +9,4 @@ This post aggregates my all crackme writeups.
 
 1. [Guessme](crackme/guessme.html)
 2. [Zed-Crackme](crackme/zed-crackme.html)
+3. [Rop](crackme/rop-crackme.html)
