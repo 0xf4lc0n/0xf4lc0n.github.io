@@ -162,7 +162,7 @@ print("Decoded serial key: ", "".join(decoded_password))
 
 And that's all. When the program creates a serial key, it compares the serial key with the data entered by user. If both strings are the same, crackme is resolved.
 
-```plain
+```nasm
 lea     rdx, [rbp+s2]
 lea     rax, [rbp+s1]
 mov     rsi, rdx        ; s2
