@@ -1,0 +1,289 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta content="IE=edge" http-equiv=X-UA-Compatible><meta content="text/html; charset=UTF-8" http-equiv=content-type><meta content="width=device-width,initial-scale=1,user-scalable=no" name=viewport><meta content="index, follow" name=robots><title>Get into that base made by js-on</title><meta content="Get into that base made by js-on" name=title><meta content=Falcon name=author><meta content=website property=og:type><meta content=https://0xf4lc0n.github.io/blog/crackme/guessme/ property=og:url><meta property=og:site_name><meta content="Get into that base made by js-on" property=og:title><meta content=https://0xf4lc0n.github.io/favicon.ico property=og:image><link href=https://0xf4lc0n.github.io/blog/crackme/guessme/ rel=canonical><link rel="shortcut icon" href=https://0xf4lc0n.github.io/favicon.ico type=image/x-icon><link href=https://0xf4lc0n.github.io/atom.xml rel=alternate title=RSS type=application/atom+xml><link href=https://0xf4lc0n.github.io/css/style.css rel=stylesheet><script defer src=https://0xf4lc0n.github.io/js/script.js></script><body><div class=wrapper><header><nav class=navBar><a href=/> /home/ </a><a href=/blog> /blog/ </a><a href=/about> /about/ </a><div class=themeSwitch><button class="themeButton dark" onclick="setTheme('dark')" title="Dark mode"><svg class="icons icons__background"><use href=https://0xf4lc0n.github.io/icons.svg#darkMode></use></svg></button><button class="themeButton light" onclick="setTheme('light')" title="Light mode"><svg class="icons icons__background"><use href=https://0xf4lc0n.github.io/icons.svg#lightMode></use></svg></button></div></nav></header><main><h1>Get into that base made by js-on</h1><p><a href=https://crackmes.one/crackme/5ed3cd9a33c5d449d91ae6b1 rel=noopener target=_blank>Download binary</a><p>After starting crackme a password prompt appears:<pre class=language-bash data-lang=bash style=background:#282828;color:#fdf4c1aa><code class=language-bash data-lang=bash><span style=color:#fdf4c1>./guessme
+</span><span style=color:#fdf4c1>Your guess: pass
+</span><span style=color:#fdf4c1>S0RRY!
+</span></code></pre><p>If an incorrect password is entered, crackme politely apologizes to us. So we have to find a correct password.<p>Firstly I opened an ELF file in Ghidra and changed names of local variables.<pre class=language-cpp data-lang=cpp style=background:#282828;color:#fdf4c1aa><code class=language-cpp data-lang=cpp><span>ulong </span><span style=color:#8ec07c>main</span><span>(</span><span style=color:#fa5c4b>void</span><span>)
+</span><span>
+</span><span>{
+</span><span>  </span><span style=color:#fa5c4b>int</span><span> mcs_digit_sum;
+</span><span>  basic_ostream </span><span style=color:#fe8019>*</span><span style=color:#fdf4c1>this</span><span>;
+</span><span>  </span><span style=color:#fa5c4b>long</span><span> in_FS_OFFSET;
+</span><span>  </span><span style=color:#fa5c4b>bool</span><span> password_is_correct;
+</span><span>  </span><span style=color:#fa5c4b>int</span><span> user_input;
+</span><span>  </span><span style=color:#fa5c4b>int</span><span> password;
+</span><span>  undefined4 local_74;
+</span><span>  </span><span style=color:#fa5c4b>long</span><span> seconds;
+</span><span>  </span><span style=color:#fa5c4b>long</span><span> microseconds;
+</span><span>  </span><span style=color:#fa5c4b>long</span><span> miliseconds;
+</span><span>  timeval timeval_stuct;
+</span><span>  basic_string_char_std__char_traits_char__std__allocator_char__ string [</span><span style=color:#d3869b>40</span><span>];
+</span><span>  </span><span style=color:#fa5c4b>long</span><span> local_20;
+</span><span>  
+</span><span>  local_20 </span><span style=color:#fe8019>= *</span><span>(</span><span style=color:#fa5c4b>long </span><span style=color:#fe8019>*</span><span>)(in_FS_OFFSET </span><span style=color:#fe8019>+ </span><span style=color:#d3869b>0x28</span><span>);
+</span><span>  </span><span style=color:#fdf4c1>allocator()</span><span>;
+</span><span>  </span><span style=color:#fdf4c1>basic_string((</span><span style=color:#fa5c4b>char </span><span style=color:#fe8019>*</span><span style=color:#fdf4c1>)string,(allocator </span><span style=color:#fe8019>*</span><span style=color:#fdf4c1>)</span><span style=color:#fe8019>&</span><span style=color:#fdf4c1>DAT_00102009)</span><span>;
+</span><span>  </span><span style=color:#fdf4c1>_allocator((allocator_char_ </span><span style=color:#fe8019>*</span><span style=color:#fdf4c1>)</span><span style=color:#fe8019>&</span><span style=color:#fdf4c1>timeval_stuct)</span><span>;
+</span><span>
+</span><span>  </span><span style=color:#fdf4c1>gettimeofday(</span><span style=color:#fe8019>&</span><span style=color:#fdf4c1>timeval_stuct,(__timezone_ptr_t)</span><span style=color:#d3869b>0x0</span><span style=color:#fdf4c1>)</span><span>;
+</span><span>  
+</span><span>  seconds </span><span style=color:#fe8019>=</span><span> timeval_stuct.</span><span style=color:#fdf4c1>tv_sec</span><span>;
+</span><span>  microseconds </span><span style=color:#fe8019>=</span><span> timeval_stuct.</span><span style=color:#fdf4c1>tv_usec</span><span>;
+</span><span>  miliseconds </span><span style=color:#fe8019>= </span><span>(</span><span style=color:#fa5c4b>long</span><span>)((</span><span style=color:#fa5c4b>double</span><span>)timeval_stuct.</span><span style=color:#fdf4c1>tv_usec </span><span style=color:#fe8019>/ </span><span style=color:#d3869b>1000.00000000 </span><span style=color:#fe8019>+ </span><span>(</span><span style=color:#fa5c4b>double</span><span>)(timeval_stuct.</span><span style=color:#fdf4c1>tv_sec </span><span style=color:#fe8019>* </span><span style=color:#d3869b>1000</span><span>));
+</span><span>  
+</span><span>  mcs_digit_sum </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>digit_sum(timeval_stuct.tv_usec)</span><span>;
+</span><span>  password </span><span style=color:#fe8019>= </span><span>(</span><span style=color:#fa5c4b>int</span><span>)(miliseconds </span><span style=color:#fe8019>% </span><span>(mcs_digit_sum </span><span style=color:#fe8019>*</span><span> microseconds));
+</span><span>  local_74 </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0x42</span><span>;
+</span><span>  
+</span><span>  </span><span style=color:#fdf4c1>operator___std__char_traits_char__((basic_ostream </span><span style=color:#fe8019>*</span><span style=color:#fdf4c1>)cout,</span><span style=color:#b8bb26>"Your guess: "</span><span style=color:#fdf4c1>)</span><span>;
+</span><span>  </span><span style=color:#fdf4c1>operator__((basic_istream_char_std__char_traits_char__ </span><span style=color:#fe8019>*</span><span style=color:#fdf4c1>)cin,</span><span style=color:#fe8019>&</span><span style=color:#fdf4c1>user_input)</span><span>;
+</span><span>  password_is_correct </span><span style=color:#fe8019>=</span><span> password </span><span style=color:#fe8019>!=</span><span> user_input;
+</span><span>
+</span><span>  </span><span style=color:#fa5c4b>if </span><span>(password_is_correct) {
+</span><span>    </span><span style=color:#fdf4c1>this </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>operator___std__char_traits_char__((basic_ostream </span><span style=color:#fe8019>*</span><span style=color:#fdf4c1>)cout,</span><span style=color:#b8bb26>"S0RRY!"</span><span style=color:#fdf4c1>)</span><span>;
+</span><span>    </span><span style=color:#fdf4c1>operator__((basic_ostream_char_std__char_traits_char__ </span><span style=color:#fe8019>*</span><span style=color:#fdf4c1>)this,endl_char_std__char_traits_char__)</span><span>;
+</span><span>  }
+</span><span>  </span><span style=color:#fa5c4b>else </span><span>{
+</span><span>    </span><span style=color:#fdf4c1>this </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>operator___std__char_traits_char__((basic_ostream </span><span style=color:#fe8019>*</span><span style=color:#fdf4c1>)cout,</span><span style=color:#b8bb26>"R"</span><span style=color:#fdf4c1>)</span><span>;
+</span><span>    </span><span style=color:#fdf4c1>this </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>operator___std__char_traits_char__(this,</span><span style=color:#b8bb26>"z"</span><span style=color:#fdf4c1>)</span><span>;
+</span><span>    </span><span style=color:#fdf4c1>this </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>operator___std__char_traits_char__(this,</span><span style=color:#b8bb26>'A'</span><span style=color:#fdf4c1>)</span><span>;
+</span><span>    </span><span style=color:#fdf4c1>this </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>operator___std__char_traits_char__(this,</span><span style=color:#b8bb26>"w"</span><span style=color:#fdf4c1>)</span><span>;
+</span><span>    </span><span style=color:#fdf4c1>this </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>operator___std__char_traits_char__(this,</span><span style=color:#b8bb26>"R"</span><span style=color:#fdf4c1>)</span><span>;
+</span><span>    </span><span style=color:#fdf4c1>this </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>operator___std__char_traits_char__(this,</span><span style=color:#b8bb26>'C'</span><span style=color:#fdf4c1>)</span><span>;
+</span><span>    </span><span style=color:#fdf4c1>this </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>operator___std__char_traits_char__(this,(</span><span style=color:#fa5c4b>char</span><span style=color:#fdf4c1>)local_74)</span><span>;
+</span><span>    </span><span style=color:#fdf4c1>operator___char_std__char_traits_char__std__allocator_char__(this,(basic_string </span><span style=color:#fe8019>*</span><span style=color:#fdf4c1>)string)</span><span>;
+</span><span>    </span><span style=color:#fdf4c1>this </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>operator___std__char_traits_char__((basic_ostream </span><span style=color:#fe8019>*</span><span style=color:#fdf4c1>)cout,</span><span style=color:#b8bb26>"IhC"</span><span style=color:#fdf4c1>)</span><span>;
+</span><span>    </span><span style=color:#fdf4c1>this </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>operator___std__char_traits_char__(this,</span><span style=color:#b8bb26>"g"</span><span style=color:#fdf4c1>)</span><span>;
+</span><span>    </span><span style=color:#fdf4c1>operator__((basic_ostream_char_std__char_traits_char__ </span><span style=color:#fe8019>*</span><span style=color:#fdf4c1>)this,endl_char_std__char_traits_char__)
+</span><span>    ;
+</span><span>  }
+</span><span>  </span><span style=color:#fdf4c1>_basic_string(string)</span><span>;
+</span><span>  </span><span style=color:#fa5c4b>if </span><span>(local_20 </span><span style=color:#fe8019>!= *</span><span>(</span><span style=color:#fa5c4b>long </span><span style=color:#fe8019>*</span><span>)(in_FS_OFFSET </span><span style=color:#fe8019>+ </span><span style=color:#d3869b>0x28</span><span>)) {
+</span><span>                    </span><span style=font-style:italic;color:#928374>/* WARNING: Subroutine does not return */
+</span><span>    </span><span style=color:#fdf4c1>__stack_chk_fail()</span><span>;
+</span><span>  }
+</span><span>  </span><span style=color:#fa5c4b>return </span><span>(ulong)password_is_correct;
+</span><span>}
+</span></code></pre><p>In order to make it more readable I rewrote the whole crackme mainly for presentation purposes.<pre class=language-cpp data-lang=cpp style=background:#282828;color:#fdf4c1aa><code class=language-cpp data-lang=cpp><span style=color:#fa5c4b>int </span><span style=color:#8ec07c>main</span><span>() {
+</span><span>    timeval current_time;
+</span><span>    </span><span style=color:#fdf4c1>gettimeofday(</span><span style=color:#fe8019>&</span><span style=color:#fdf4c1>current_time, </span><span style=color:#d3869b>nullptr</span><span style=color:#fdf4c1>)</span><span>;
+</span><span>
+</span><span>    ulong seconds </span><span style=color:#fe8019>=</span><span> current_time.</span><span style=color:#fdf4c1>tv_sec</span><span>;
+</span><span>    ulong microseconds </span><span style=color:#fe8019>=</span><span> current_time.</span><span style=color:#fdf4c1>tv_usec</span><span>;
+</span><span>    ulong miliseconds </span><span style=color:#fe8019>=</span><span> seconds </span><span style=color:#fe8019>/ </span><span style=color:#d3869b>1000.0 </span><span style=color:#fe8019>+</span><span> microseconds </span><span style=color:#fe8019>* </span><span style=color:#d3869b>1000</span><span>;
+</span><span>    </span><span style=color:#fabd2f>uint</span><span> microseconds_digit_sum </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>digit_sum(microseconds)</span><span>;
+</span><span>
+</span><span>    </span><span style=color:#fabd2f>uint</span><span> password </span><span style=color:#fe8019>=</span><span> miliseconds </span><span style=color:#fe8019>% </span><span>(microseconds_digit_sum </span><span style=color:#fe8019>*</span><span> microseconds);
+</span><span>    </span><span style=color:#fabd2f>uint</span><span> user_input;
+</span><span>    
+</span><span>    std::cout </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>"Guess: "</span><span>;
+</span><span>    std::cin </span><span style=color:#fe8019>>></span><span> user_input;
+</span><span>
+</span><span>    </span><span style=color:#fa5c4b>bool</span><span> password_is_correct </span><span style=color:#fe8019>= </span><span>(password </span><span style=color:#fe8019>!=</span><span> user_input);
+</span><span>
+</span><span>    </span><span style=color:#fa5c4b>if </span><span>(password_is_correct) {
+</span><span>        std::cout </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>"Sorry!" </span><span style=color:#fe8019><<</span><span> std::endl;
+</span><span>    } </span><span style=color:#fa5c4b>else </span><span>{
+</span><span>        std::cout </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>"RzAwrCInCg" </span><span style=color:#fe8019><<</span><span> std::endl;
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#fa5c4b>return</span><span> password_is_correct;
+</span><span>}
+</span></code></pre><p>The password is based on the time which is returned by gettimeofday function. From linux man I got additional info about gettimeofday.<p>Function prototypes:<pre class=language-cpp data-lang=cpp style=background:#282828;color:#fdf4c1aa><code class=language-cpp data-lang=cpp><span style=color:#fa5c4b>int </span><span style=color:#8ec07c>gettimeofday</span><span>(</span><span style=color:#fa5c4b>struct</span><span> timeval </span><span style=color:#fe8019>*</span><span style=color:#fdf4c1>tv</span><span>, </span><span style=color:#fa5c4b>struct</span><span> timezone </span><span style=color:#fe8019>*</span><span style=color:#fdf4c1>tz</span><span>);
+</span><span style=color:#fa5c4b>int </span><span style=color:#8ec07c>settimeofday</span><span>(</span><span style=color:#fa5c4b>const struct</span><span> timeval </span><span style=color:#fe8019>*</span><span style=color:#fdf4c1>tv</span><span>, </span><span style=color:#fa5c4b>const struct</span><span> timezone </span><span style=color:#fe8019>*</span><span style=color:#fdf4c1>tz</span><span>);
+</span></code></pre><p>The function takes two arguments. The first one stores information about time and the second about time zone. In this example only the first argument is set, the second one is nullptr.<p>timeval type:<pre class=language-cpp data-lang=cpp style=background:#282828;color:#fdf4c1aa><code class=language-cpp data-lang=cpp><span style=color:#fa5c4b>struct </span><span style=color:#8ec07c>timeval </span><span>{
+</span><span>    </span><span style=color:#fabd2f>time_t</span><span>      tv_sec;     </span><span style=font-style:italic;color:#928374>/* seconds */
+</span><span>    </span><span style=color:#fabd2f>suseconds_t</span><span> tv_usec;    </span><span style=font-style:italic;color:#928374>/* microseconds */
+</span><span>};
+</span></code></pre><p>Time is stored in the current_time variable. Seconds (current_time.tv_sec) and microseconds (current_time.tv_usec) are copied to relevant variables. After that seconds and microseconds are combined into miliseconds. To do that we multiply seconds by 1000 and then add a number constructed from the first 3 digits of microseconds.<p>Example:<pre class=language-txt data-lang=txt style=background:#282828;color:#fdf4c1aa><code class=language-txt data-lang=txt><span>seconds: 1594730719
+</span><span>microseconds: 940827
+</span><span>miliseconds: 1594730719 * 1000 + 940827/1000 = 1594730719000 + 940 = 1594730719940
+</span></code></pre><p>Miliseconds are unsigned long type so fractional part is rejected in the final result.<p>Next, program calculates microseconds digits sum. It’s achieved by calling digit_sum funtion (orginally named as cross_sum).<pre class=language-cpp data-lang=cpp style=background:#282828;color:#fdf4c1aa><code class=language-cpp data-lang=cpp><span>ulong </span><span style=color:#8ec07c>cross_sum</span><span>(</span><span style=color:#fa5c4b>long </span><span style=color:#fdf4c1>microseconds</span><span>)
+</span><span>
+</span><span>{
+</span><span>  ulong p1;
+</span><span>  ulong p2;
+</span><span>  ulong p3;
+</span><span>  </span><span style=color:#fa5c4b>double</span><span> ln_microseconds;
+</span><span>  </span><span style=color:#fa5c4b>double</span><span> ln_10;
+</span><span>  </span><span style=color:#fabd2f>uint</span><span> sum;
+</span><span>  </span><span style=color:#fa5c4b>int</span><span> exponent;
+</span><span>  
+</span><span>  </span><span style=color:#fdf4c1>log<</span><span style=color:#fa5c4b>long</span><span style=color:#fdf4c1>>(microseconds)</span><span>;
+</span><span>  </span><span style=color:#fdf4c1>log<</span><span style=color:#fa5c4b>int</span><span style=color:#fdf4c1>>(</span><span style=color:#d3869b>10</span><span style=color:#fdf4c1>)</span><span>;
+</span><span>  sum </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0</span><span>;
+</span><span>  exponent </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0</span><span>;
+</span><span>  </span><span style=color:#fa5c4b>while </span><span>(exponent </span><span style=color:#fe8019>< </span><span>(</span><span style=color:#fa5c4b>int</span><span>)(ln_microseconds </span><span style=color:#fe8019>/</span><span> ln_10 </span><span style=color:#fe8019>+ </span><span style=color:#d3869b>1.00000000</span><span>)) {
+</span><span>    p1 </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>power(</span><span style=color:#d3869b>10</span><span style=color:#fdf4c1>,exponent)</span><span>;
+</span><span>    p2 </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>power(</span><span style=color:#d3869b>10</span><span style=color:#fdf4c1>,exponent </span><span style=color:#fe8019>+ </span><span style=color:#d3869b>1</span><span style=color:#fdf4c1>)</span><span>;
+</span><span>    p3 </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>power(</span><span style=color:#d3869b>10</span><span style=color:#fdf4c1>,exponent)</span><span>;
+</span><span>    sum </span><span style=color:#fe8019>=</span><span> sum </span><span style=color:#fe8019>+ </span><span>(</span><span style=color:#fa5c4b>int</span><span>)(((microseconds </span><span style=color:#fe8019>-</span><span> microseconds </span><span style=color:#fe8019>% </span><span>(</span><span style=color:#fa5c4b>long</span><span>)(</span><span style=color:#fa5c4b>int</span><span>)p1) </span><span style=color:#fe8019>% </span><span>(</span><span style=color:#fa5c4b>long</span><span>)(</span><span style=color:#fa5c4b>int</span><span>)p2) </span><span style=color:#fe8019>/
+</span><span>                     (</span><span style=color:#fa5c4b>long</span><span>)(</span><span style=color:#fa5c4b>int</span><span>)p3);
+</span><span>    exponent </span><span style=color:#fe8019>=</span><span> exponent </span><span style=color:#fe8019>+ </span><span style=color:#d3869b>1</span><span>;
+</span><span>  }
+</span><span>  </span><span style=color:#fa5c4b>return </span><span>(ulong)sum;
+</span><span>}
+</span></code></pre><p>“While loop” proceedes until an exponent is lower than the number of all digits in microseconds.<p>Example:<pre style=background:#282828;color:#fdf4c1aa><code><span>microseconds: 940827
+</span><span>exponent: 0
+</span><span>
+</span><span>while (exponent < 6) {
+</span><span>    ...
+</span><span>    ...
+</span><span>}
+</span></code></pre><p>Function adds all digits from microseconds without the last one. When I tried to calculate the sum value, my result did not match the result given by the program. I was surprised and rerun program in debugger in order to check what is going on. Once more I was surprised when I saw power(10, 0) = 10. I checked assembly code of power function and everything became clear.<pre class=language-nasm data-lang=nasm style=background:#282828;color:#fdf4c1aa><code class=language-nasm data-lang=nasm><span style=color:#8ec07c>┌ </span><span style=color:#d3869b>52</span><span style=color:#8ec07c>: sym.p_int__int (int64_t arg1</span><span style=color:#fdf4c1>, </span><span style=color:#8ec07c>int64_t arg2)</span><span style=font-style:italic;color:#928374>;
+</span><span style=color:#8ec07c>│</span><span style=font-style:italic;color:#928374>           ; var int64_t exponent @ rbp-0x18
+</span><span style=color:#8ec07c>│</span><span style=font-style:italic;color:#928374>           ; var int64_t base @ rbp-0x14
+</span><span style=color:#8ec07c>│</span><span style=font-style:italic;color:#928374>           ; var int64_t result @ rbp-0x8
+</span><span style=color:#8ec07c>│</span><span style=font-style:italic;color:#928374>           ; var int64_t var_4h @ rbp-0x4
+</span><span style=color:#8ec07c>│</span><span style=font-style:italic;color:#928374>           ; arg int64_t arg1 @ rdi
+</span><span style=color:#8ec07c>│</span><span style=font-style:italic;color:#928374>           ; arg int64_t arg2 @ rsi
+</span><span style=color:#8ec07c>│           </span><span style=color:#fa5c4b>push </span><span style=color:#fdf4c1>rbp                    
+</span><span style=color:#8ec07c>│           </span><span style=color:#fa5c4b>mov </span><span style=color:#fdf4c1>rbp, rsp
+</span><span style=color:#8ec07c>│           </span><span style=color:#fa5c4b>mov </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>base</span><span style=color:#fdf4c1>], edi</span><span style=font-style:italic;color:#928374>       ; arg1
+</span><span style=color:#8ec07c>│           </span><span style=color:#fa5c4b>mov </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>exponent</span><span style=color:#fdf4c1>], esi</span><span style=font-style:italic;color:#928374>   ; arg2
+</span><span style=color:#8ec07c>│           </span><span style=color:#fa5c4b>mov </span><span style=color:#fdf4c1>eax, </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>base</span><span style=color:#fdf4c1>]
+</span><span style=color:#8ec07c>│           </span><span style=color:#fa5c4b>mov </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>result</span><span style=color:#fdf4c1>], eax
+</span><span style=color:#8ec07c>│           </span><span style=color:#fa5c4b>mov </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>var_4h</span><span style=color:#fdf4c1>], </span><span style=color:#d3869b>1
+</span><span style=color:#8ec07c>│           
+</span><span style=color:#8ec07c>│       ┌─> </span><span style=color:#fa5c4b>mov </span><span style=color:#fdf4c1>eax, </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>var_4h</span><span style=color:#fdf4c1>]
+</span><span style=color:#8ec07c>│       ╎   </span><span style=color:#fa5c4b>cmp </span><span style=color:#fdf4c1>eax, </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>exponent</span><span style=color:#fdf4c1>]</span><span style=font-style:italic;color:#928374>   ; check if value stored in eax is greater than or equal to exponent
+</span><span style=color:#8ec07c>│      ┌──< </span><span style=color:#fa5c4b>jge </span><span style=color:#8ec07c>_end                    
+</span><span style=color:#8ec07c>│      │╎   </span><span style=color:#fa5c4b>mov </span><span style=color:#fdf4c1>eax, </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>result</span><span style=color:#fdf4c1>]
+</span><span style=color:#8ec07c>│      │╎   </span><span style=color:#fa5c4b>imul </span><span style=color:#fdf4c1>eax, </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>base</span><span style=color:#fdf4c1>]
+</span><span style=color:#8ec07c>│      │╎   </span><span style=color:#fa5c4b>mov </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>result</span><span style=color:#fdf4c1>], eax
+</span><span style=color:#8ec07c>│      │╎   </span><span style=color:#fa5c4b>add </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>var_4h</span><span style=color:#fdf4c1>], </span><span style=color:#d3869b>1
+</span><span style=color:#8ec07c>│      │└─< </span><span style=color:#fa5c4b>jmp </span><span style=color:#d3869b>0x5619c19b3230
+</span><span style=color:#8ec07c>│      └──> _end:
+</span><span style=color:#8ec07c>|           </span><span style=color:#fa5c4b>mov </span><span style=color:#fdf4c1>eax, </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>result</span><span style=color:#fdf4c1>]
+</span><span style=color:#8ec07c>│           </span><span style=color:#fa5c4b>pop </span><span style=color:#fdf4c1>rbp
+</span><span style=color:#8ec07c>└           </span><span style=color:#fa5c4b>ret
+</span></code></pre><p>For power(10, 0) assembly code looks like that:<pre class=language-nasm data-lang=nasm style=background:#282828;color:#fdf4c1aa><code class=language-nasm data-lang=nasm><span style=color:#8ec07c>┌ </span><span style=color:#d3869b>52</span><span style=color:#8ec07c>: sym.p_int__int (int64_t arg1</span><span style=color:#fdf4c1>, </span><span style=color:#8ec07c>int64_t arg2)</span><span style=font-style:italic;color:#928374>;
+</span><span style=color:#8ec07c>│</span><span style=font-style:italic;color:#928374>           ; var int64_t exponent @ rbp-0x18
+</span><span style=color:#8ec07c>│</span><span style=font-style:italic;color:#928374>           ; var int64_t base @ rbp-0x14
+</span><span style=color:#8ec07c>│</span><span style=font-style:italic;color:#928374>           ; var int64_t result @ rbp-0x8
+</span><span style=color:#8ec07c>│</span><span style=font-style:italic;color:#928374>           ; var int64_t var_4h @ rbp-0x4
+</span><span style=color:#8ec07c>│</span><span style=font-style:italic;color:#928374>           ; arg int64_t arg1 @ rdi
+</span><span style=color:#8ec07c>│</span><span style=font-style:italic;color:#928374>           ; arg int64_t arg2 @ rsi
+</span><span style=color:#8ec07c>│           </span><span style=color:#fa5c4b>push </span><span style=color:#fdf4c1>rbp                    
+</span><span style=color:#8ec07c>│           </span><span style=color:#fa5c4b>mov </span><span style=color:#fdf4c1>rbp, rsp
+</span><span style=color:#8ec07c>│           </span><span style=color:#fa5c4b>mov </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>base</span><span style=color:#fdf4c1>], edi</span><span style=font-style:italic;color:#928374>       ; 10
+</span><span style=color:#8ec07c>│           </span><span style=color:#fa5c4b>mov </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>exponent</span><span style=color:#fdf4c1>], esi</span><span style=font-style:italic;color:#928374>   ; 0
+</span><span style=color:#8ec07c>│           </span><span style=color:#fa5c4b>mov </span><span style=color:#fdf4c1>eax, </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>base</span><span style=color:#fdf4c1>]</span><span style=font-style:italic;color:#928374>       ; eax = 10
+</span><span style=color:#8ec07c>│           </span><span style=color:#fa5c4b>mov </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>result</span><span style=color:#fdf4c1>], eax</span><span style=font-style:italic;color:#928374>     ; result = 10
+</span><span style=color:#8ec07c>│           </span><span style=color:#fa5c4b>mov </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>var_4h</span><span style=color:#fdf4c1>], </span><span style=color:#d3869b>1</span><span style=font-style:italic;color:#928374>       ; var_4h = 1
+</span><span style=color:#8ec07c>│           
+</span><span style=color:#8ec07c>│       ┌─> </span><span style=color:#fa5c4b>mov </span><span style=color:#fdf4c1>eax, </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>var_4h</span><span style=color:#fdf4c1>]</span><span style=font-style:italic;color:#928374>     ; eax = 1
+</span><span style=color:#8ec07c>│       ╎   </span><span style=color:#fa5c4b>cmp </span><span style=color:#fdf4c1>eax, </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>exponent</span><span style=color:#fdf4c1>]</span><span style=font-style:italic;color:#928374>   ; eax > exponent => 1 > 0
+</span><span style=color:#8ec07c>│      ┌──< </span><span style=color:#fa5c4b>jge </span><span style=color:#8ec07c>_end</span><span style=font-style:italic;color:#928374>                    ; So we make a jump
+</span><span style=color:#8ec07c>│      │╎   </span><span style=color:#fa5c4b>mov </span><span style=color:#fdf4c1>eax, </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>result</span><span style=color:#fdf4c1>]
+</span><span style=color:#8ec07c>│      │╎   </span><span style=color:#fa5c4b>imul </span><span style=color:#fdf4c1>eax, </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>base</span><span style=color:#fdf4c1>]
+</span><span style=color:#8ec07c>│      │╎   </span><span style=color:#fa5c4b>mov </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>result</span><span style=color:#fdf4c1>], eax
+</span><span style=color:#8ec07c>│      │╎   </span><span style=color:#fa5c4b>add </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>var_4h</span><span style=color:#fdf4c1>], </span><span style=color:#d3869b>1
+</span><span style=color:#8ec07c>│      │└─< </span><span style=color:#fa5c4b>jmp </span><span style=color:#d3869b>0x5619c19b3230
+</span><span style=color:#8ec07c>│      └──> _end:
+</span><span style=color:#8ec07c>|           </span><span style=color:#fa5c4b>mov </span><span style=color:#fdf4c1>eax, </span><span style=color:#fabd2f>dword </span><span style=color:#fdf4c1>[</span><span style=color:#8ec07c>result</span><span style=color:#fdf4c1>]</span><span style=font-style:italic;color:#928374>     ; eax = 10
+</span><span style=color:#8ec07c>│           </span><span style=color:#fa5c4b>pop </span><span style=color:#fdf4c1>rbp
+</span><span style=color:#8ec07c>└           </span><span style=color:#fa5c4b>ret
+</span></code></pre><p>And this is why power(10, 0) = 10. Here is a C code of power function obtained from Ghidra:<pre class=language-cpp data-lang=cpp style=background:#282828;color:#fdf4c1aa><code class=language-cpp data-lang=cpp><span>ulong </span><span style=color:#8ec07c>power</span><span>(</span><span style=color:#fa5c4b>int </span><span style=color:#fdf4c1>base</span><span>,</span><span style=color:#fa5c4b>int </span><span style=color:#fdf4c1>exponent</span><span>)
+</span><span>
+</span><span>{
+</span><span>  </span><span style=color:#fabd2f>uint</span><span> pow;
+</span><span>  </span><span style=color:#fa5c4b>int</span><span> i;
+</span><span>  
+</span><span>  i </span><span style=color:#fe8019>= </span><span style=color:#d3869b>1</span><span>;
+</span><span>  pow </span><span style=color:#fe8019>=</span><span> base;
+</span><span>  </span><span style=color:#fa5c4b>while </span><span>(i </span><span style=color:#fe8019><</span><span> exponent) {
+</span><span>    pow </span><span style=color:#fe8019>=</span><span> pow </span><span style=color:#fe8019>*</span><span> base;
+</span><span>    i </span><span style=color:#fe8019>=</span><span> i </span><span style=color:#fe8019>+ </span><span style=color:#d3869b>1</span><span>;
+</span><span>  }
+</span><span>  </span><span style=color:#fa5c4b>return </span><span>(ulong)pow;
+</span><span>}
+</span></code></pre><p>When the cross_sum job is done, the final password is calculated by using this formula:<pre class=language-txt data-lang=txt style=background:#282828;color:#fdf4c1aa><code class=language-txt data-lang=txt><span>    password = miliseconds % (microseconds_digit_sum * microseconds);
+</span></code></pre><p>Here is the whole code rewritten. I added some debug information for presentation purposes. Code should be compiled on linux with compiler which supports C++17.<pre class=language-cpp data-lang=cpp style=background:#282828;color:#fdf4c1aa><code class=language-cpp data-lang=cpp><span style=color:#fa5c4b>#include </span><span style=color:#b8bb26>&LTiostream>
+</span><span style=color:#fa5c4b>#include </span><span style=color:#b8bb26>&LTsys/time.h>
+</span><span style=color:#fa5c4b>#include </span><span style=color:#b8bb26>&LTcmath>
+</span><span>
+</span><span style=color:#fa5c4b>constexpr bool</span><span> debug_flag </span><span style=color:#fe8019>= </span><span style=color:#d3869b>true</span><span>;
+</span><span>
+</span><span style=color:#fabd2f>uint </span><span style=color:#8ec07c>digit_sum</span><span>(</span><span style=color:#fa5c4b>long </span><span style=color:#fdf4c1>number</span><span>) {
+</span><span>    </span><span style=color:#fabd2f>uint</span><span> sum </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0</span><span>;
+</span><span>    </span><span style=color:#fabd2f>uint</span><span> debug_sum </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0</span><span>;
+</span><span>
+</span><span>    </span><span style=color:#fa5c4b>int</span><span> exponent </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0</span><span>;
+</span><span>
+</span><span>    </span><span style=color:#fa5c4b>while </span><span>(exponent </span><span style=color:#fe8019>< </span><span style=color:#fa5c4b>int</span><span>(</span><span style=color:#fabd2f>log</span><span style=color:#fdf4c1>(number) </span><span style=color:#fe8019>/ </span><span style=color:#fabd2f>log</span><span style=color:#fdf4c1>(</span><span style=color:#d3869b>10</span><span style=color:#fdf4c1>) </span><span style=color:#fe8019>+ </span><span style=color:#d3869b>1</span><span>)) {
+</span><span>
+</span><span>        ulong p1 </span><span style=color:#fe8019>= </span><span>(exponent </span><span style=color:#fe8019>== </span><span style=color:#d3869b>0</span><span>) </span><span style=color:#fe8019>? </span><span style=color:#d3869b>10 </span><span style=color:#fe8019>: </span><span style=color:#fabd2f>pow</span><span style=color:#fdf4c1>(</span><span style=color:#d3869b>10</span><span style=color:#fdf4c1>, exponent)</span><span>;
+</span><span>        ulong p2 </span><span style=color:#fe8019>= </span><span style=color:#fabd2f>pow</span><span style=color:#fdf4c1>(</span><span style=color:#d3869b>10</span><span style=color:#fdf4c1>, exponent </span><span style=color:#fe8019>+ </span><span style=color:#d3869b>1</span><span style=color:#fdf4c1>)</span><span>;
+</span><span>        ulong p3 </span><span style=color:#fe8019>= </span><span>(exponent </span><span style=color:#fe8019>== </span><span style=color:#d3869b>0</span><span>) </span><span style=color:#fe8019>? </span><span style=color:#d3869b>10 </span><span style=color:#fe8019>: </span><span style=color:#fabd2f>pow</span><span style=color:#fdf4c1>(</span><span style=color:#d3869b>10</span><span style=color:#fdf4c1>, exponent)</span><span>;
+</span><span>        
+</span><span>        sum </span><span style=color:#fe8019>+= </span><span style=color:#fa5c4b>int</span><span>(((number </span><span style=color:#fe8019>-</span><span> number </span><span style=color:#fe8019>%</span><span> p1) </span><span style=color:#fe8019>%</span><span> p2) </span><span style=color:#fe8019>/</span><span> p3);
+</span><span>        
+</span><span>        </span><span style=color:#fa5c4b>if constexpr </span><span>(debug_flag) {
+</span><span>            debug_sum </span><span style=color:#fe8019>=</span><span> number </span><span style=color:#fe8019>%</span><span> p1;
+</span><span>            std::cout </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>"-----------------------" </span><span style=color:#fe8019><<</span><span> std::endl;
+</span><span>            std::cout </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>"p1: " </span><span style=color:#fe8019><<</span><span> p1 </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>" p2: " </span><span style=color:#fe8019><<</span><span> p2 </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>" p3: " </span><span style=color:#fe8019><<</span><span> p3 </span><span style=color:#fe8019><<</span><span> std::endl;
+</span><span>            std::cout </span><span style=color:#fe8019><<</span><span> number </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>" % " </span><span style=color:#fe8019><<</span><span> p1 </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>" = " </span><span style=color:#fe8019><<</span><span> debug_sum </span><span style=color:#fe8019><<</span><span> std::endl;
+</span><span>            debug_sum </span><span style=color:#fe8019>=</span><span> number </span><span style=color:#fe8019>-</span><span> debug_sum;
+</span><span>            std::cout </span><span style=color:#fe8019><<</span><span> number </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>" - " </span><span style=color:#fe8019><< </span><span>(number </span><span style=color:#fe8019>% </span><span style=color:#d3869b>10</span><span>) </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>" = " </span><span style=color:#fe8019><<</span><span> debug_sum </span><span style=color:#fe8019><<</span><span> std::endl;
+</span><span>            std::cout </span><span style=color:#fe8019><<</span><span> debug_sum </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>" % " </span><span style=color:#fe8019><<</span><span> p2 </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>" = " </span><span style=color:#fe8019><< </span><span>(debug_sum </span><span style=color:#fe8019>%=</span><span> p2) </span><span style=color:#fe8019><<</span><span> std::endl;
+</span><span>            std::cout </span><span style=color:#fe8019><<</span><span> debug_sum </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>" / " </span><span style=color:#fe8019><<</span><span> p3 </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>" = " </span><span style=color:#fe8019><< </span><span>(debug_sum </span><span style=color:#fe8019>/=</span><span> p3) </span><span style=color:#fe8019><<</span><span> std::endl;
+</span><span>            std::cout </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>"sum: " </span><span style=color:#fe8019><<</span><span> sum </span><span style=color:#fe8019><<</span><span> std::endl;
+</span><span>        }
+</span><span>
+</span><span>        exponent</span><span style=color:#fe8019>++</span><span>;
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#fa5c4b>return</span><span> sum;
+</span><span>}
+</span><span>
+</span><span style=color:#fa5c4b>int </span><span style=color:#8ec07c>main</span><span>() {
+</span><span>    timeval current_time;
+</span><span>    </span><span style=color:#fdf4c1>gettimeofday(</span><span style=color:#fe8019>&</span><span style=color:#fdf4c1>current_time, </span><span style=color:#d3869b>nullptr</span><span style=color:#fdf4c1>)</span><span>;
+</span><span>
+</span><span>    ulong seconds </span><span style=color:#fe8019>=</span><span> current_time.</span><span style=color:#fdf4c1>tv_sec</span><span>;
+</span><span>    ulong microseconds </span><span style=color:#fe8019>=</span><span> current_time.</span><span style=color:#fdf4c1>tv_usec</span><span>;
+</span><span>    ulong miliseconds </span><span style=color:#fe8019>=</span><span> microseconds </span><span style=color:#fe8019>/ </span><span style=color:#d3869b>1000.0 </span><span style=color:#fe8019>+</span><span> seconds </span><span style=color:#fe8019>* </span><span style=color:#d3869b>1000</span><span>;
+</span><span>    </span><span style=color:#fabd2f>uint</span><span> microseconds_digit_sum </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>digit_sum(current_time.tv_usec)</span><span>;
+</span><span>
+</span><span>    </span><span style=color:#fabd2f>uint</span><span> password </span><span style=color:#fe8019>=</span><span> miliseconds </span><span style=color:#fe8019>% </span><span>(microseconds_digit_sum </span><span style=color:#fe8019>*</span><span> microseconds);
+</span><span>    </span><span style=color:#fabd2f>uint</span><span> user_input;
+</span><span>    
+</span><span>    </span><span style=color:#fa5c4b>if constexpr </span><span>(debug_flag) {
+</span><span>        std::cout </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>"-----------------------" </span><span style=color:#fe8019><<</span><span> std::endl;
+</span><span>        std::cout </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>"seconds: " </span><span style=color:#fe8019><<</span><span> seconds </span><span style=color:#fe8019><<</span><span> std::endl;
+</span><span>        std::cout </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>"microseconds: " </span><span style=color:#fe8019><<</span><span> microseconds </span><span style=color:#fe8019><<</span><span> std::endl;
+</span><span>        std::cout </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>"miliseconds: " </span><span style=color:#fe8019><<</span><span> miliseconds </span><span style=color:#fe8019><<</span><span> std::endl;
+</span><span>        std::cout </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>"digit_sum: " </span><span style=color:#fe8019><<</span><span> microseconds_digit_sum </span><span style=color:#fe8019><<</span><span> std::endl;
+</span><span>        std::cout </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>"password: " </span><span style=color:#fe8019><<</span><span> password </span><span style=color:#fe8019><<</span><span> std::endl; 
+</span><span>        std::cout </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>"-----------------------" </span><span style=color:#fe8019><<</span><span> std::endl;
+</span><span>    }
+</span><span>
+</span><span>    std::cout </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>"Guess: "</span><span>;
+</span><span>    std::cin </span><span style=color:#fe8019>>></span><span> user_input;
+</span><span>    
+</span><span>    </span><span style=color:#fa5c4b>bool</span><span> password_is_correct </span><span style=color:#fe8019>= </span><span>(password </span><span style=color:#fe8019>!=</span><span> user_input);
+</span><span>
+</span><span>    </span><span style=color:#fa5c4b>if </span><span>(password_is_correct) {
+</span><span>        std::cout </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>"Sorry!" </span><span style=color:#fe8019><<</span><span> std::endl;
+</span><span>    } </span><span style=color:#fa5c4b>else </span><span>{
+</span><span>        std::cout </span><span style=color:#fe8019><< </span><span style=color:#b8bb26>"RzAwrCInCg" </span><span style=color:#fe8019><<</span><span> std::endl;
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#fa5c4b>return</span><span> password_is_correct;
+</span><span>}
+</span></code></pre><p>GDB script:<pre class=language-txt data-lang=txt style=background:#282828;color:#fdf4c1aa><code class=language-txt data-lang=txt><span>b *main+210
+</span><span>
+</span><span>set pagination off
+</span><span>set prompt
+</span><span>
+</span><span>r
+</span><span>
+</span><span>echo seconds: 
+</span><span>x/dg $rbp-0x68
+</span><span>echo microseconds: 
+</span><span>x/dg $rbp-0x60
+</span><span>echo miliseconds: 
+</span><span>x/dg $rbp-0x58
+</span><span>echo password:
+</span><span>x/dw $rbp-0x70
+</span><span>echo Copy password and continue program execution (enter c or continue)\n
+</span></code></pre><p>Used tools:<ul><li>Ghidra<li>Radare2<li>GDB</ul><p class=tagsData></main><footer><hr><div class=footContainer><div class=footLeft><p>Licensed under <a rel="noopener noreferrer" href=https://fr.wikipedia.org/wiki/Licence_MIT target=_blank>MIT</a><br> Built with <a rel="noopener noreferrer" href=https://www.getzola.org target=_blank>Zola</a> using <a rel="noopener noreferrer" href=https://github.com/Speyll/anemone target=_blank>anemone</a> theme & <a rel="noopener noreferrer" href=https://github.com/Speyll/veqev target=_blank>veqev</a> colors.<br></div><div class=footRight><a rel="noopener noreferrer" title="Subscribe via RSS for updates." class=icons__background href=https://0xf4lc0n.github.io/atom.xml target=_blank><svg class="icons icons__background"><use href=https://0xf4lc0n.github.io/icons.svg#rss></use></svg></a></div></div></footer></div>

